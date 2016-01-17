@@ -1,8 +1,4 @@
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/a1b5a249-e656-4a0f-af57-77f8f84f2e74/mini.png)](https://insight.sensiolabs.com/projects/a1b5a249-e656-4a0f-af57-77f8f84f2e74)
-
 # RCH/JWTAuthenticationBundle
-
-![](https://raw.githubusercontent.com/chalasr/JWTAuthenticationBundle/master/Resources/public/SCREENCAST.gif)
 
 Make deployment a part of your development environment by :
 - Setup a fast and automated deployment workflow
@@ -13,12 +9,8 @@ Make deployment a part of your development environment by :
 Requirements
 ============
 
-- Symfony/Console >= 2.5
-- Symfony/Filesystem >= 2.5
-- Symfony/Config >= 2.5
-- Symfony/Yaml >= 2.5
-- Symfony/Dependency-Injection >= 2.5
-- Ruby >= 2.0
+- Symfony >= 2.3
+- FOSUserBundle >= 1.3
 
 Installation
 ============
@@ -65,52 +57,15 @@ class AppKernel extends Kernel
 }
 ```
 
-Step 3: Install Capistrano
--------------------------
-
-Build installation files for capistrano
-```bash
-$ app/console rch:deploy:install
-```
-
-Install dependencies
-```bash
-$ bundle install
-```
-
 Usage
 ======
 
-Setup deployment configuration in interactive mode  
-```bash
-$ app/console rch:deploy:setup
-```
-
-Create YAML staging files  
-```yaml
-# app/config/rch/staging/prod.yml
-
-domain: 'ssh_host'
-user: 'ssh_user'
-keys: '/home/ssh_user/.ssh/id_rsa'
-forward_agent: 'false'
-auth_methods: 'publickey password'
-deploy_to: '/path/to/deploy'
-
-```
-
-Start deployment  
-```bash
-$ app/console rch:deploy:run --staging-name=[STAGING-NAME]
-```
-
-[Advanced usage](https://github.com/capistrano/capistrano#usage)
+**Coming soon**
 
 Credits
 =======
 
-[Robin Chalas](https:/github.com/chalasr)  
-[robin.chalas@gmail.com](mailto:robin.chalas@gmail.com)
+[Robin Chalas](https:/github.com/chalasr) -  [robin.chalas@gmail.com](mailto:robin.chalas@gmail.com)
 
 License
 =======
