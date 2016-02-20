@@ -8,19 +8,16 @@
  * For more informations about license, please see the LICENSE
  * file distributed in this source code.
  */
-
 namespace RCH\JWTUserBundle\Controller;
 
-use RCH\JWTUserBundle\Util\CanSerializeTrait as CanSerialize;
-use RCH\JWTUserBundle\Validator\Constraints\Email;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
-use FOS\RestBundle\View\View;
 use Gesdinet\JWTRefreshTokenBundle\Entity\RefreshToken;
+use RCH\JWTUserBundle\Util\CanSerializeTrait as CanSerialize;
+use RCH\JWTUserBundle\Validator\Constraints\Email;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 /**
@@ -146,7 +143,7 @@ class SecurityController extends Controller
     protected function createUser($data, $isOAuth = false)
     {
         $userManager = $this->getUserManager();
-        $em = $this->getDoctrine()->getManager();;
+        $em = $this->getDoctrine()->getManager();
 
         $user = $userManager->createUser();
         $user->setUsername($data['email']);

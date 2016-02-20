@@ -8,7 +8,6 @@
  * For more informations about license, please see the LICENSE
  * file distributed in this source code.
  */
-
 namespace RCH\JWTUserBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
@@ -21,7 +20,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  *
  * @author Robin Chalas <robin.chalas@gmail.com>
  */
-class RCHJWTUserExtension extends Extension
+class RCHJWTUserBundle extends Extension
 {
     /**
      * {@inheritdoc}
