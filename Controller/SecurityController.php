@@ -39,7 +39,7 @@ class SecurityController extends Controller
      * @Rest\RequestParam(name="password", requirements="[^/]+", nullable=false, allowBlank=false)
      *
      * @param ParamFetcher $paramFetcher
-     * 
+     *
      * @return object The authentication token
      */
     public function registerUserAccountAction(ParamFetcher $paramFetcher)
@@ -173,7 +173,7 @@ class SecurityController extends Controller
         $response = array(
             'token'         => $this->get('lexik_jwt_authentication.jwt_manager')->create($user),
             'refresh_token' => $this->attachRefreshToken($user),
-            'user'          => json_decode($this->serialize($user, array('groups' => ['api']))),
+            'user'          => array('email' => $user->getUsername()),
         );
 
         return new JsonResponse($response, $statusCode);
