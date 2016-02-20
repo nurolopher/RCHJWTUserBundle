@@ -1,38 +1,39 @@
-# RCH/JWTAuthenticationBundle
+RCH/JWTUserBundle
+=================
 
-Make deployment a part of your development environment by :
-- Setup a fast and automated deployment workflow
-- Create stagings in config format (YAML, PHP, XML)
-- Control execution order by namespaces
-- Add custom tasks and environment variables.
+Integration of LexikJWTAuthentication + FOSUser bundles that provides a REST users management through JSON Web Token.
 
-Requirements
-============
+What's inside
+-------------
 
-- Symfony >= 2.3
-- FOSUserBundle >= 1.3
+- [__FOSUserBundle__]()
+- __FOSRestBundle__
+- __LexikJWTAuthenticationBundle__
+- __GesdinetRefreshTokenBundle__
+- __JMSSerializerBundle__
 
 Installation
-============
+------------
 
-Step 1: Download the Bundle
----------------------------
+#### Step 1: Download the Bundle
+
 
 Open a command console, enter your project directory and execute the
 following command to download the latest stable version of this bundle:
 
 ```bash
-$ composer require chalasr/capistrano-bundle dev-master
+$ composer require chalasr/jwt-user-bundle dev-master
 ```
 
 This command requires you to have Composer installed globally, as explained
 in the [installation chapter](https://getcomposer.org/doc/00-intro.md)
 of the Composer documentation.
 
-Step 2: Enable the Bundle
--------------------------
+#### Step 2: Enable the Bundle
 
-Then, enable the bundle by adding it to the list of registered bundles
+> __Note:__ This bundle requires 3rd party bundles that need to be registered too.
+
+Then, enable the bundles by adding them to the list of registered bundles
 in the `app/AppKernel.php` file of your project:
 
 ```php
@@ -46,8 +47,12 @@ class AppKernel extends Kernel
     {
         $bundles = array(
             // ...
-
-            new RCH\JWTAuthenticationBundle\RCHJWTAuthenticationBundle(),
+            new FOS\RestBundle\FOSRestBundle(),
+            new JMS\SerializerBundle\JMSSerializerBundle(),
+            new FOS\UserBundle\FOSUserBundle(),
+            new Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle(),
+            new Gesdinet\JWTRefreshTokenBundle\GesdinetJWTRefreshTokenBundle(),
+            new RCH\JWTUserBundle\RCHJWTUserBundle(),
         );
 
         // ...
@@ -57,17 +62,14 @@ class AppKernel extends Kernel
 }
 ```
 
-Usage
-======
+Contributing
+============
 
-**Coming soon**
-
-Credits
-=======
-
-[Robin Chalas](https:/github.com/chalasr) -  [robin.chalas@gmail.com](mailto:robin.chalas@gmail.com)
+See the contribution guidelines in the [CONTRIBUTING.md](CONTRIBUTING.md) distributed file.
 
 License
-=======
+-------
 
-[![License](http://img.shields.io/:license-gpl3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0.html)
+The code is released under the GPL-3.0 license.
+
+For the whole copyright, see the [LICENSE](LICENSE) file.

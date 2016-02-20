@@ -1,15 +1,15 @@
 <?php
 
-/*
-* This file is part of RCH/JWTAuthenticationBundle.
-*
-* Robin Chalas <robin.chalas@gmail.com>
-*
-* For more informations about license, please see the LICENSE
-* file distributed in this source code.
-*/
+/**
+ * This file is part of the RCH/JWTUserBundle.
+ *
+ * Robin Chalas <robin.chalas@gmail.com>
+ *
+ * For more informations about license, please see the LICENSE
+ * file distributed in this source code.
+ */
 
-namespace RCH\JWTAuthenticationBundle\DependencyInjection;
+namespace RCH\JWTUserBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -27,7 +27,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('rch_jwt');
+        $rootNode = $treeBuilder->root('rch_jwt_user');
 
         return $treeBuilder;
     }

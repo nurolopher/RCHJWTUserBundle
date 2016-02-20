@@ -1,25 +1,28 @@
 {
-    "name": "chalasr/jwt-authentication-bundle",
+    "name": "chalasr/jwt-user-bundle",
     "description": "Json Web Token authentication bundle including FOSUserBundle integration",
-    "keywords": ["jwt", "json web token", "symfony2", "fosuser", "lexik"],
+    "keywords": ["jwt","authentication", "user", "symfony2", "fosuser", "lexikjwt", "token", "api", "rest", "fosrest"],
     "type": "symfony-bundle",
     "license": "GPL-3.0",
     "authors": [
         {
             "name": "Robin CHALAS",
             "email": "robin.chalas@gmail.com",
-            "homepage": "https://github.com/chalasr/JWTAuthenticationBundle"
+            "homepage": "https://github.com/chalasr/JWTUserBundle"
         }
     ],
     "require": {
-        "php": "> 5.4",
-        "symfony/symfony": "^2.3",
-        "friendsofsymfony/user-bundle": ">=1.3",
-        "lexik/jwt-authentication-bundle": "^1.3",
-        "gesdinet/jwt-refresh-token-bundle": "^0.1.3"
+        "php": ">= 5.3.9",
+        "symfony/symfony": ">=2.3",
+        "jms/serializer-bundle": "dev-master",
+        "friendsofsymfony/rest-bundle": "~1.7",
+        "friendsofsymfony/user-bundle": "~1.3",
+        "nelmio/api-doc-bundle": "2.5.*@dev",
+        "lexik/jwt-authentication-bundle": "~1.3.1",
+        "gesdinet/jwt-refresh-token-bundle": "~0.1",
+        "fabpot/goutte": "~2.0"
     },
     "autoload": {
-        "psr-0": { "RCH\\JWTAuthenticationBundle": "" }
-    },
-    "target-dir": "RCH/JWTAuthenticationBundle"
+        "psr-4": { "RCH\\JWTUserBundle": "" }
+    }
 }

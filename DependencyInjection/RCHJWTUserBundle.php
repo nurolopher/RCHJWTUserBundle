@@ -1,15 +1,15 @@
 <?php
 
-/*
-* This file is part of RCH/JWTAuthenticationBundle.
-*
-* Robin Chalas <robin.chalas@gmail.com>
-*
-* For more informations about license, please see the LICENSE
-* file distributed in this source code.
-*/
+/**
+ * This file is part of RCH/JWTUserBundle.
+ *
+ * Robin Chalas <robin.chalas@gmail.com>
+ *
+ * For more informations about license, please see the LICENSE
+ * file distributed in this source code.
+ */
 
-namespace RCH\JWTAuthenticationBundle\DependencyInjection;
+namespace RCH\JWTUserBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -21,7 +21,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  *
  * @author Robin Chalas <robin.chalas@gmail.com>
  */
-class RCHCapistranoExtension extends Extension
+class RCHJWTUserExtension extends Extension
 {
     /**
      * {@inheritdoc}

@@ -1,19 +1,2 @@
-rch_jwt_security_register:
-    path: /register
-    defaults: { _controller: rch.jwtauthentication.security:register }
-    methods: POST
-
-rch_jwt_security_login:
-    path: /login
-    defaults: { _controller: rch.jwtauthentication.security:register }
-    methods: POST
-
-rch_jwt_security_logout:
-    path: /logout
-    defaults: { _controller: rch.jwtauthentication.security:logout }
-    methods: POST
-
-rch_jwt_security_refreshtoken:
-    path:     /refresh_token
-    methods: POST
-    defaults: { _controller: gesdinet.jwtrefreshtoken:refresh }
+security:
+    resource: RCH\JWTUserBundle\Controller\SecurityController
