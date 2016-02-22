@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of RCH/JWTUserBundle.
+ * This file is part of the RCHJWTUserBundle package.
  *
  * Robin Chalas <robin.chalas@gmail.com>
  *
@@ -13,25 +13,17 @@ namespace RCH\JWTUserBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use FOS\UserBundle\Entity\User as BaseUser;
 use JMS\Serializer\Annotation as JMS;
+use RCH\JWTUserBundle\Util\TimestampableTrait as Timestampable;
 
 /**
  * User.
  *
- * @ORM\Table(name="users")
+ * @ORM\MappedSuperClass
  * @JMS\ExclusionPolicy("all")
- * @ORM\Entity
  */
 class User extends BaseUser
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
-     * @JMS\Expose
-     */
-    protected $id;
+    use Timestampable;
 
     /**
      * @var string
@@ -41,27 +33,13 @@ class User extends BaseUser
     protected $email;
 
     /**
-     * @var DateTime
-     *
-     * @ORM\Column(name="created_at", type="date", nullable=true)
-     */
-    protected $createdAt;
-
-    /**
-     * @var DateTime
-     *
-     * @ORM\Column(name="updated_at", type="date", nullable=true)
-     */
-    protected $updatedAt;
-
-    /**
      * Returns a string representation.
      *
      * @return string
      */
     public function __toString()
     {
-        return $this->getEmail() ?: 'Anonymous';
+        return $this->getUsername() ?: 'Anonymous';
     }
 
     /**
@@ -76,62 +54,5 @@ class User extends BaseUser
         $this->facebookId = $facebookId;
 
         return $this;
-    }
-
-    /**
-     * Sets the creation date.
-     *
-     * @param \DateTime|null $createdAt
-     */
-    public function setCreatedAt(\DateTime $createdAt = null)
-    {
-        $this->createdAt = $createdAt;
-    }
-
-    /**
-     * Returns the creation date.
-     *
-     * @return \DateTime|null
-     */
-    public function getCreatedAt()
-    {
-        return $this->createdAt;
-    }
-
-    /**
-     * Sets the last update date.
-     *
-     * @param \DateTime|null $updatedAt
-     */
-    public function setUpdatedAt(\DateTime $updatedAt = null)
-    {
-        $this->updatedAt = $updatedAt;
-    }
-
-    /**
-     * Returns the last update date.
-     *
-     * @return \DateTime|null
-     */
-    public function getUpdatedAt()
-    {
-        return $this->updatedAt;
-    }
-
-    /**
-     * Hook on pre-persist operations.
-     */
-    public function prePersist()
-    {
-        $this->createdAt = new \DateTime();
-        $this->updatedAt = new \DateTime();
-    }
-
-    /**
-     * Hook on pre-update operations.
-     */
-    public function preUpdate()
-    {
-        $this->updatedAt = new \DateTime();
     }
 }

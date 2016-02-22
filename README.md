@@ -47,12 +47,13 @@ class AppKernel extends Kernel
     {
         $bundles = array(
             // ...
-            new FOS\RestBundle\FOSRestBundle(),
-            new JMS\SerializerBundle\JMSSerializerBundle(),
-            new FOS\UserBundle\FOSUserBundle(),
+            new RCH\JWTUserBundle\RCHJWTUserBundle(),
+            // ...
             new Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle(),
             new Gesdinet\JWTRefreshTokenBundle\GesdinetJWTRefreshTokenBundle(),
-            new RCH\JWTUserBundle\RCHJWTUserBundle(),
+            new FOS\UserBundle\FOSUserBundle(),
+            new FOS\RestBundle\FOSRestBundle(),
+            new JMS\SerializerBundle\JMSSerializerBundle(),
         );
 
         // ...
@@ -60,6 +61,16 @@ class AppKernel extends Kernel
 
     // ...
 }
+```
+
+LEXIK :
+
+Generate the SSH keys :
+
+```bash
+$ mkdir -p app/var/jwt
+$ openssl genrsa -out app/var/jwt/private.pem -aes256 4096
+$ openssl rsa -pubout -in app/var/jwt/private.pem -out app/var/jwt/public.pem
 ```
 
 Contributing

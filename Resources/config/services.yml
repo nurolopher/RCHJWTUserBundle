@@ -1,5 +1,5 @@
 services:
     rch_jwt_user.jwt_response_listener:
-        class: RCH\JWTUserBundle\EventListener\JwtResponseListener
+        class: RCH\JWTUserBundle\EventListener\JWTResponseListener
         tags:
             - { name: kernel.event_listener, event: lexik_jwt_authentication.on_authentication_success, method: onAuthenticationSuccessResponse }

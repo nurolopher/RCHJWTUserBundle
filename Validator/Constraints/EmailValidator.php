@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of RCH/JWTUserBundle.
+ * This file is part of the RCHJWTUserBundle package.
  *
  * Robin Chalas <robin.chalas@gmail.com>
  *

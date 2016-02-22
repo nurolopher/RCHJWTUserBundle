@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of RCH/JWTUserBundle.
+ * This file is part of the RCHJWTUserBundle package.
  *
  * Robin Chalas <robin.chalas@gmail.com>
  *
@@ -17,7 +17,7 @@ use Lexik\Bundle\JWTAuthenticationBundle\Event\AuthenticationSuccessEvent;
  *
  * @author Robin Chalas <robin.chalas@gmail.com>
  */
-class JwtResponseListener
+class JWTResponseListener
 {
     /**
      * Add public data to the authentication response.

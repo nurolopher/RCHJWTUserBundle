@@ -1,22 +1,23 @@
 <?php
 
-/**
- * This file is part of the RCH/JWTUserBundle.
+/*
+ * This file is part of the RCHJWTUserBundle package.
  *
- * Robin Chalas <robin.chalas@gmail.com>
+ * (c) Robin Chalas <https://github.com/chalasr>
  *
- * For more informations about license, please see the LICENSE
- * file distributed in this source code.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+
 namespace RCH\JWTUserBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 /**
- * Merges configuration from app/config files.
+ * This is the class that validates and merges configuration from your app/config files.
  *
- * @author Robin Chalas <robin.chalas@gmail.com>
+ * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html#cookbook-bundles-extension-config-class}
  */
 class Configuration implements ConfigurationInterface
 {
@@ -26,7 +27,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('rch_jwt_user');
+        $treeBuilder->root('rch_jwt_user');
 
         return $treeBuilder;
     }

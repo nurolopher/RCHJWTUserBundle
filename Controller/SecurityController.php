@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of RCH/JWTUserBundle.
+ * This file is part of the RCHJWTUserBundle package.
  *
  * Robin Chalas <robin.chalas@gmail.com>
  *
@@ -12,11 +12,12 @@ namespace RCH\JWTUserBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
+use FOS\UserBundle\Model\UserInterface;
 use Gesdinet\JWTRefreshTokenBundle\Entity\RefreshToken;
-use RCH\JWTUserBundle\Util\CanSerializeTrait as CanSerialize;
+use RCH\JWTUserBundle\Exception\UserAlreadyExistsException;
+use RCH\JWTUserBundle\Util\SerializableTrait as CanSerialize;
 use RCH\JWTUserBundle\Validator\Constraints\Email;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
@@ -34,7 +35,7 @@ class SecurityController extends Controller
      *
      * @Rest\Post("/register")
      *
-     * @Rest\View
+     * @Rest\View(statusCode=201)
      * @Rest\RequestParam(name="email", requirements=@Email, nullable=false, allowBlank=false)
      * @Rest\RequestParam(name="password", requirements="[^/]+", nullable=false, allowBlank=false)
      *
@@ -42,16 +43,16 @@ class SecurityController extends Controller
      *
      * @return object The authentication token
      */
-    public function registerUserAccountAction(ParamFetcher $paramFetcher)
+    public function registerAction(ParamFetcher $paramFetcher)
     {
         $data = $paramFetcher->all();
-        $userManager = $this->getUserManager();
+        $userManager = $this->container->get('fos_user.user_manager');
 
         if ($userManager->findUserByEmail($data['email']) !== null) {
-            throw new UnprocessableEntityHttpException(sprintf('An user with email \'%s\' already exists', $data['email']));
+            throw new UserAlreadyExistsException(sprintf('An user with email \'%s\' already exists', $data['email']));
         }
 
-        return $this->generateToken($this->createUser($data), 201);
+        return $this->generateToken($this->createUser($data));
     }
 
     /**
@@ -64,7 +65,7 @@ class SecurityController extends Controller
      *
      * @return object The authentication token
      */
-    public function authenticateUserAction()
+    public function loginAction()
     {
         /* Virtual method originally handled by Security Component */
     }
@@ -82,10 +83,10 @@ class SecurityController extends Controller
      *
      * @return object The authentication token
      */
-    public function authenticateByOAuthAction(ParamFetcher $paramFetcher)
+    public function loginFromOAuthResponseAction(ParamFetcher $paramFetcher)
     {
         $data = $paramFetcher->all();
-        $userManager = $this->getUserManager();
+        $userManager = $this->container->get('fos_user.user_manager');
 
         if (false === $this->isValidFacebookAccount($data['facebook_id'], $data['facebook_access_token'])) {
             throw new UnprocessableEntityHttpException('The given id has no valid facebook account associated');
@@ -93,66 +94,43 @@ class SecurityController extends Controller
 
         $existingByFacebookId = $userManager->findUserBy(['facebookId' => $data['facebook_id']]);
 
-        if (null !== $existingByFacebookId) {
-            return $this->generateToken($existingByFacebookId, 200);
+        if (is_object($existingByFacebookId)) {
+            return $this->generateToken($existingByFacebookId);
         }
 
         $existingByEmail = $userManager->findUserBy(['email' => $data['email']]);
 
-        if (null !== $existingByEmail) {
+        if (is_object($existingByEmail)) {
             $existingByEmail->setFacebookId($data['facebook_id']);
             $userManager->updateUser($existingByEmail);
 
-            return $this->generateToken($existingByEmail, 200);
+            return $this->generateToken($existingByEmail);
         }
 
         $data['password'] = $this->generateRandomPassword();
 
-        return $this->generateToken($this->createUser($data, true), 201);
+        return $this->generateToken($this->createUser($data, true));
     }
 
     /**
-     * Reset expired Token.
+     * Creates a new User.
      *
-     * @Rest\Post("/refresh_token")
+     * @param array $data
+     * @param bool  $isOAuth
      *
-     * @Rest\RequestParam(name="token", allowBlank=false, nullable=false)
-     * @Rest\RequestParam(name="refresh_token", allowBlank=false, nullable=false)
-     *
-     * @param Request $request
-     *
-     * @return object The new authentication token
+     * @return UserInterface $user
      */
-    public function refreshTokenAction(Request $request)
+    protected function createUser(array $data)
     {
-        return $this->forward('gesdinet.jwtrefreshtoken:refresh', array(
-            'request' => $request,
-        ));
-    }
+        $userManager = $this->container->get('fos_user.user_manager');
 
-    /**
-     * Creates new User.
-     *
-     * @param array  $data
-     * @param string $username
-     * @param string $password
-     * @param bool   $isOAuth
-     *
-     * @return User $user
-     */
-    protected function createUser($data, $isOAuth = false)
-    {
-        $userManager = $this->getUserManager();
-        $em = $this->getDoctrine()->getManager();
+        $user = $userManager->createUser()
+            ->setUsername($data['email'])
+            ->setEmail($data['email'])
+            ->setEnabled(true)
+            ->setPlainPassword($data['password']);
 
-        $user = $userManager->createUser();
-        $user->setUsername($data['email']);
-        $user->setEmail($data['email']);
-        $user->setEnabled(true);
-        $user->setCreatedAt(new \DateTime());
-        $user->setPlainPassword($data['password']);
-
-        if (true === $isOAuth) {
+        if (isset($data['facebook_id'])) {
             $user->setFacebookId($data['facebook_id']);
         }
 
@@ -162,43 +140,46 @@ class SecurityController extends Controller
     }
 
     /**
-     * Generates token from user.
+     * Generates a JWT from given User.
      *
-     * @param User $user
      *
-     * @return JsonResponse $token
+     * @param UserInterface $user
+     * @param int           $statusCode
+     *
+     * @return array Response body containing the User and its tokens
      */
-    protected function generateToken($user, $statusCode = 200)
+    protected function generateToken(UserInterface $user, $statusCode = 200)
     {
         $response = array(
-            'token'         => $this->get('lexik_jwt_authentication.jwt_manager')->create($user),
+            'token'         => $this->container->get('lexik_jwt_authentication.jwt_manager')->create($user),
             'refresh_token' => $this->attachRefreshToken($user),
-            'user'          => array('email' => $user->getUsername()),
+            'user'          => $user->getUsername(),
         );
 
-        return new JsonResponse($response, $statusCode);
+        return $response;
     }
 
     /**
      * Provides a refresh token.
      *
-     * @param UserManager $user
+     * @param UserInterface $user
      *
      * @return string refresh_token
      */
-    protected function attachRefreshToken($user)
+    protected function attachRefreshToken(UserInterface $user)
     {
-        $refreshTokenManager = $this->get('gesdinet.jwtrefreshtoken.refresh_token_manager');
+        $refreshTokenManager = $this->container->get('gesdinet.jwtrefreshtoken.refresh_token_manager');
         $refreshToken = $refreshTokenManager->getLastFromUsername($user->getUsername());
+        $refreshTokenTtl = $this->container->getParameter('gesdinet_jwt_refresh_token.ttl');
 
         if (!$refreshToken instanceof RefreshToken) {
-            $datetime = new \DateTime();
-            $datetime->modify('+2592000 seconds');
+            $expirationDate = new \DateTime();
+            $expirationDate->modify(sprintf('+%s seconds', $refreshTokenTtl));
 
             $refreshToken = $refreshTokenManager->create();
             $refreshToken->setUsername($user->getUsername());
             $refreshToken->setRefreshToken();
-            $refreshToken->setValid($datetime);
+            $refreshToken->setValid($expirationDate);
 
             $refreshTokenManager->save($refreshToken);
         }
@@ -228,33 +209,13 @@ class SecurityController extends Controller
     }
 
     /**
-     * Returns Entity Manager.
-     *
-     * @return EntityManager $entityManager
-     */
-    protected function getEntityManager()
-    {
-        return $this->getDoctrine()->getManager();
-    }
-
-    /**
-     * Returns authentication provider.
-     *
-     * @return UserManager $userManager
-     */
-    protected function getUserManager()
-    {
-        return $this->get('fos_user.user_manager');
-    }
-
-    /**
      * Generates a random password of 8 characters.
      *
      * @return string
      */
     protected function generateRandomPassword()
     {
-        $tokenGenerator = $this->get('fos_user.util.token_generator');
+        $tokenGenerator = $this->container->get('fos_user.util.token_generator');
 
         return substr($tokenGenerator->generateToken(), 0, 8);
     }

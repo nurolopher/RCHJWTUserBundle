@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of RCH/JWTUserBundle.
+ * This file is part of the RCHJWTUserBundle package.
  *
  * Robin Chalas <robin.chalas@gmail.com>
  *
@@ -18,7 +18,7 @@ use JMS\Serializer\SerializerBuilder;
  *
  * @author Robin Chalas <robin.chalas@gmail.com>
  */
-trait CanSerializeTrait
+trait SerializableTrait
 {
     /**
      * Serialize an entity or other object in given format.
