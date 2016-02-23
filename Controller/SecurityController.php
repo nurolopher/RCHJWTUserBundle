@@ -148,7 +148,7 @@ class SecurityController extends Controller
      *
      * @return array Response body containing the User and its tokens
      */
-    protected function generateToken(UserInterface $user, $statusCode = 200)
+    protected function generateToken(UserInterface $user)
     {
         $response = array(
             'token'         => $this->container->get('lexik_jwt_authentication.jwt_manager')->create($user),
@@ -198,7 +198,7 @@ class SecurityController extends Controller
     protected function isValidFacebookAccount($id, $accessToken)
     {
         $client = new \Goutte\Client();
-        $request = $client->request('GET', sprintf('https://graph.facebook.com/me?access_token=%s', $accessToken));
+        $client->request('GET', sprintf('https://graph.facebook.com/me?access_token=%s', $accessToken));
         $response = json_decode($client->getResponse()->getContent());
 
         if ($response->error) {

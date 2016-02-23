@@ -39,7 +39,6 @@ class RCHJWTUserExtension extends Extension implements PrependExtensionInterface
      */
     public function prepend(ContainerBuilder $container)
     {
-        $bundles = $container->getParameter('kernel.bundles');
         $kernelRootDir = $container->getParameter('kernel.root_dir');
 
         $configurations = array(

@@ -1,16 +1,16 @@
 RCH/JWTUserBundle
 =================
 
-Integration of LexikJWTAuthentication + FOSUser bundles that provides a REST users management through JSON Web Token.
+Manages users through JSON Web Token in your REST Api.
 
 What's inside
 -------------
 
-- [__FOSUserBundle__]()
-- __FOSRestBundle__
-- __LexikJWTAuthenticationBundle__
-- __GesdinetRefreshTokenBundle__
-- __JMSSerializerBundle__
+- [__FOSUserBundle__](https://github.com/FriendsOfSymfony/FOSUserBundle)
+- [__FOSRestBundle__](https://github.com/FriendsOfSymfony/FOSRestBundle)
+- [__LexikJWTAuthenticationBundle__](https://github.com/lexik/LexikJWTAuthenticationBundle)
+- [__GesdinetRefreshTokenBundle__](https://github.com/gesdinet/JWTRefreshTokenBundle)
+- [__JMSSerializerBundle__](https://github.com/schmittjoh/JMSSerializerBundle)
 
 Installation
 ------------
@@ -37,8 +37,9 @@ Then, enable the bundles by adding them to the list of registered bundles
 in the `app/AppKernel.php` file of your project:
 
 ```php
-<?php
 // app/AppKernel.php
+
+<?php
 
 // ...
 class AppKernel extends Kernel
@@ -48,7 +49,6 @@ class AppKernel extends Kernel
         $bundles = array(
             // ...
             new RCH\JWTUserBundle\RCHJWTUserBundle(),
-            // ...
             new Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle(),
             new Gesdinet\JWTRefreshTokenBundle\GesdinetJWTRefreshTokenBundle(),
             new FOS\UserBundle\FOSUserBundle(),
@@ -63,18 +63,17 @@ class AppKernel extends Kernel
 }
 ```
 
-LEXIK :
+#### Step 3: Configure the Bundle
 
-Generate the SSH keys :
+Generate the RSA keys used by LexikJWTAuthenticationBundle :
 
 ```bash
-$ mkdir -p app/var/jwt
-$ openssl genrsa -out app/var/jwt/private.pem -aes256 4096
-$ openssl rsa -pubout -in app/var/jwt/private.pem -out app/var/jwt/public.pem
+$ php app/console rch:jwt:generate-keys
 ```
 
+
 Contributing
-============
+------------
 
 See the contribution guidelines in the [CONTRIBUTING.md](CONTRIBUTING.md) distributed file.
 

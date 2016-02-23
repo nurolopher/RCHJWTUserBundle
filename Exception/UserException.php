@@ -19,7 +19,6 @@ namespace RCH\JWTUserBundle\Exception;
  class UserException extends \RuntimeException
  {
      private $statusCode;
-     private $headers;
 
      /**
       * Constructor.

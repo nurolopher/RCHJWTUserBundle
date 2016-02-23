@@ -26,11 +26,19 @@
         "gesdinet/jwt-refresh-token-bundle": "~0.1",
         "fabpot/goutte": "~2.0"
     },
+    "require-dev": {
+        "fabpot/php-cs-fixer": "^1.11"
+    },
     "autoload": {
         "psr-4": { "RCH\\JWTUserBundle\\": "" }
     },
-    "require-dev": {
-        "fabpot/php-cs-fixer": "^1.11"
+    "scripts": {
+        "post-install-cmd": [
+            "RCH\\JWTUserBundle\\Command\\GenerateKeysCommand::execute"
+        ],
+        "post-update-cmd": [
+            "RCH\\JWTUserBundle\\Command\\GenerateKeysCommand::execute"
+        ]
     },
     "extra": {
         "branch-alias": {
