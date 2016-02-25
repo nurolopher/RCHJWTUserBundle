@@ -1,3 +1,5 @@
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/2fee6932-fec3-4556-b8d9-cbad0f8aceef/mini.png)](https://insight.sensiolabs.com/projects/2fee6932-fec3-4556-b8d9-cbad0f8aceef)
+
 RCH/JWTUserBundle
 =================
 

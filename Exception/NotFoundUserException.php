@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the RCH/JWTUserBundle.
+ * This file is part of the RCHJWTUserBundle package.
  *
  * Robin Chalas <robin.chalas@gmail.com>
  *
@@ -11,12 +11,11 @@
 namespace RCH\JWTUserBundle\Exception;
 
 /**
- * UserAlreadyExistsException is thrown when a user is persisted with
- * an identifier that already exists in database.
+ * NotFoundUserException is thrown the fetched User doesn't exist.
  *
  * @author Robin Chalas <robin.chalas@gmail.com>
  */
-class UserAlreadyExistsException extends UserException
+class NotFoundUserException extends UserException
 {
     /**
      * Constructor.
@@ -25,8 +24,8 @@ class UserAlreadyExistsException extends UserException
      * @param \Exception|null $previous The previous exception
      * @param int             $code     The internal exception code
      */
-    public function __construct($message = null, \Exception $previous = null, $code = 0)
+    public function __construct($message = 'The given user cannot be found.', \Exception $previous = null, $code = 0)
     {
-        parent::__construct(422, $message, $previous, $code);
+        parent::__construct(404, $message, $previous, $code);
     }
 }

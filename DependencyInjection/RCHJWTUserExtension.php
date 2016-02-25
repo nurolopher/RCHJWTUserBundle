@@ -51,8 +51,8 @@ class RCHJWTUserExtension extends Extension implements PrependExtensionInterface
                 'exception' => array(
                     'enabled' => true,
                     'codes'   => array(
-                        'RCH\JWTUserBundle\Exception\UserAlreadyExistsException' => 422,
-                        'RCH\JWTUserBundle\Exception\UserNotFoundException'      => 404,
+                        'RCH\JWTUserBundle\Exception\AlreadyExistingUserException' => 422,
+                        'RCH\JWTUserBundle\Exception\NotFoundUserException'        => 404,
                     ),
                 ),
             ),

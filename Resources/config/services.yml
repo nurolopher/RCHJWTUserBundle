@@ -1,4 +1,12 @@
 services:
+    rch_jwt_user.param_fetcher:
+        class: RCH\JWTUserBundle\Request\RequestParamFetcher
+        arguments:
+            requestStack: @request_stack
+            validator: @validator
+        calls:
+            - [ setContainer, [ "@service_container" ] ]
+
     rch_jwt_user.jwt_response_listener:
         class: RCH\JWTUserBundle\EventListener\JWTResponseListener
         tags:

@@ -4,3 +4,11 @@ security:
 security_refresh_token:
     path:     /refresh_token
     defaults: { _controller: gesdinet.jwtrefreshtoken:refresh }
+    requirements:
+        methods: POST
+
+security_register:
+    path:    /register
+    defaults: { _controller: RCHJWTUser:Security:register }
+    requirements:
+        methods: POST

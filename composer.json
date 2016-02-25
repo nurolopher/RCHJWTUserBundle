@@ -34,10 +34,10 @@
     },
     "scripts": {
         "post-install-cmd": [
-            "RCH\\JWTUserBundle\\Command\\GenerateKeysCommand::execute"
+            "php app/console rch:jwt:generate-keys"
         ],
         "post-update-cmd": [
-            "RCH\\JWTUserBundle\\Command\\GenerateKeysCommand::execute"
+            "php app/console rch:jwt:generate-keys"
         ]
     },
     "extra": {
