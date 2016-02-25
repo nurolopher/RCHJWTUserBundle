@@ -11,11 +11,12 @@
 namespace RCH\JWTUserBundle\Exception;
 
 /**
- * UserNotFoundException is thrown when the fetched User doesn't exist.
+ * AlreadyExistingUserException is thrown when a user is persisted with
+ * an identifier that already exists in database.
  *
  * @author Robin Chalas <robin.chalas@gmail.com>
  */
-class UserNotFoundException extends UserException
+class AlreadyExistingUserException extends UserException
 {
     /**
      * Constructor.
@@ -24,8 +25,8 @@ class UserNotFoundException extends UserException
      * @param \Exception|null $previous The previous exception
      * @param int             $code     The internal exception code
      */
-    public function __construct($message = 'The given user cannot be found.', \Exception $previous = null, $code = 0)
+    public function __construct($message = 'An user with the same identifier already exists.', \Exception $previous = null, $code = 0)
     {
-        parent::__construct($message, 404, $previous);
+        parent::__construct(422, $message, $previous, $code);
     }
 }
