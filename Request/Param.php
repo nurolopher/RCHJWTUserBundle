@@ -10,7 +10,12 @@
  */
 namespace RCH\JWTUserBundle\Request;
 
-class RequestParam
+/**
+ * Request parameter.
+ *
+ * @author Robin Chalas <robin.chalas@gmail.com>
+ */
+class Param
 {
     /** @var string */
     public $name;
@@ -30,9 +35,6 @@ class RequestParam
     /** @var bool */
     public $required = true;
 
-    /** @var bool */
-    public $class = null;
-
     /**
      * Constructor.
      *
@@ -50,7 +52,6 @@ class RequestParam
     private function create()
     {
         $this->setRequirements();
-        $this->setClass();
 
         foreach ($this->options as $option) {
             if ((null === $option && null === $this->$option)
@@ -76,7 +77,7 @@ class RequestParam
         $requirements = $this->options['requirements'];
 
         if (!is_array($requirements)) {
-            $requirements = [$requirements];
+            $requirements = array($requirements);
         }
 
         foreach ($requirements as $constraint) {
@@ -84,32 +85,6 @@ class RequestParam
         }
 
         unset($this->options['requirements']);
-
-        return $this;
-    }
-
-    /**
-     * Set class for class constraint.
-     */
-    public function setClass()
-    {
-        if (!isset($this->options['class']) || !$this->options['class']) {
-            return $this;
-        }
-
-        $class = $this->options['class'];
-
-        unset($this->options['class']);
-
-        if (is_object($class)) {
-            $this->class = $class;
-
-            return $this;
-        }
-
-        if (class_exists($class)) {
-            $this->class = new $class();
-        }
 
         return $this;
     }

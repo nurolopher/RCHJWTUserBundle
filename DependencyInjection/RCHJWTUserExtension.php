@@ -47,15 +47,6 @@ class RCHJWTUserExtension extends Extension implements PrependExtensionInterface
                 'public_key_path'  => $kernelRootDir.'/var/jwt/public.pem',
                 'pass_phrase'      => 'foobar',
             ),
-            'fos_rest' => array(
-                'exception' => array(
-                    'enabled' => true,
-                    'codes'   => array(
-                        'RCH\JWTUserBundle\Exception\AlreadyExistingUserException' => 422,
-                        'RCH\JWTUserBundle\Exception\NotFoundUserException'        => 404,
-                    ),
-                ),
-            ),
         );
 
         foreach ($configurations as $extension => $config) {

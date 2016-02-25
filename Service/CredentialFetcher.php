@@ -8,8 +8,9 @@
  * For more informations about license, please see the LICENSE
  * file distributed in this source code.
  */
-namespace RCH\JWTUserBundle\Request;
+namespace RCH\JWTUserBundle\Service;
 
+use RCH\JWTUserBundle\Request\Param;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,7 +26,7 @@ use Symfony\Component\Validator\ValidatorInterface as LegacyValidatorInterface;
  *
  * @author Robin Chalas <robin.chalas@gmail.com>
  */
-class ParamFetcher
+class CredentialFetcher
 {
     protected $requestStack;
     protected $validator;
@@ -57,7 +58,7 @@ class ParamFetcher
      *
      * @param array $methodRequirements A list of request params with their validation rules
      */
-    public function setRequirements($methodRequirements)
+    public function create(array $methodRequirements)
     {
         $this->methodRequirements = $methodRequirements;
     }
@@ -73,7 +74,23 @@ class ParamFetcher
     }
 
     /**
-     * Valid and get a parameter.
+     * Fetches all required parameters from the current Request body.
+     *
+     * @return array
+     */
+    public function all()
+    {
+        $params = array();
+
+        foreach ($this->methodRequirements as $key => $config) {
+            $params[$key] = $this->get($key);
+        }
+
+        return $params;
+    }
+
+    /**
+     * Fetches a given parameter from the current Request body.
      *
      * @param string $name The parameter key
      *
@@ -81,13 +98,13 @@ class ParamFetcher
      */
     public function get($name)
     {
-        $param = $this->getParamValue($name);
+        $param = $this->getRequest()->request->get($name);
 
         if (!$paramConfig = $this->methodRequirements[$name]) {
             return;
         }
 
-        $config = new RequestParam($name, $paramConfig);
+        $config = new Param($name, $paramConfig);
 
         if (true === $config->required && !($this->isParameterSet($name))) {
             throw new BadRequestHttpException(
@@ -115,13 +132,13 @@ class ParamFetcher
     /**
      * Handle requirements validation.
      *
-     * @param RequestParam $param
+     * @param Param $param
      *
      * @throws BadRequestHttpException If the param is not valid
      *
-     * @return RequestParam
+     * @return Param
      */
-    private function handleRequirements(RequestParam $config, $param)
+    private function handleRequirements(Param $config, $param)
     {
         $name = $config->name;
 
@@ -144,7 +161,7 @@ class ParamFetcher
             } else {
                 if ($constraint instanceof UniqueEntity) {
                     $object = $config->class;
-                    @$accessor = PropertyAccess::createPropertyAccessor();
+                    $accessor = PropertyAccess::createPropertyAccessor();
 
                     if ($accessor->isWritable($object, $name)) {
                         $accessor->setValue($object, $name, $param);
@@ -216,17 +233,5 @@ class ParamFetcher
         }
 
         throw new \RuntimeException('There is no current request.');
-    }
-
-    /**
-     * Get a parameter from Request body.
-     *
-     * @param string $name The parameter name
-     *
-     * @return array|null
-     */
-    private function getParamValue($name)
-    {
-        return $this->getRequest()->request->get($name);
     }
 }

@@ -1,6 +1,6 @@
 services:
-    rch_jwt_user.param_fetcher:
-        class: RCH\JWTUserBundle\Request\ParamFetcher
+    rch_jwt_user.credential_fetcher:
+        class: RCH\JWTUserBundle\Service\CredentialFetcher
         arguments:
             requestStack: @request_stack
             validator: @validator

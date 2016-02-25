@@ -1,3 +1,5 @@
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/2fee6932-fec3-4556-b8d9-cbad0f8aceef/mini.png)](https://insight.sensiolabs.com/projects/2fee6932-fec3-4556-b8d9-cbad0f8aceef)
+
 RCH/JWTUserBundle
 =================
 
@@ -7,10 +9,8 @@ What's inside
 -------------
 
 - [__FOSUserBundle__](https://github.com/FriendsOfSymfony/FOSUserBundle)
-- [__FOSRestBundle__](https://github.com/FriendsOfSymfony/FOSRestBundle)
 - [__LexikJWTAuthenticationBundle__](https://github.com/lexik/LexikJWTAuthenticationBundle)
 - [__GesdinetRefreshTokenBundle__](https://github.com/gesdinet/JWTRefreshTokenBundle)
-- [__JMSSerializerBundle__](https://github.com/schmittjoh/JMSSerializerBundle)
 
 Installation
 ------------
@@ -49,11 +49,9 @@ class AppKernel extends Kernel
         $bundles = array(
             // ...
             new RCH\JWTUserBundle\RCHJWTUserBundle(),
+            new FOS\UserBundle\FOSUserBundle(),
             new Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle(),
             new Gesdinet\JWTRefreshTokenBundle\GesdinetJWTRefreshTokenBundle(),
-            new FOS\UserBundle\FOSUserBundle(),
-            new FOS\RestBundle\FOSRestBundle(),
-            new JMS\SerializerBundle\JMSSerializerBundle(),
         );
 
         // ...

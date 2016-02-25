@@ -9,7 +9,7 @@
 * file distributed in this source code.
 */
 
-namespace RCH\JWTUserBundle\Util;
+namespace RCH\JWTUserBundle\Command;
 
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Output\OutputInterface;

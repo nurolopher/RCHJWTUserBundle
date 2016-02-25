@@ -12,23 +12,18 @@ namespace RCH\JWTUserBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use FOS\UserBundle\Entity\User as BaseUser;
-use JMS\Serializer\Annotation as JMS;
-use RCH\JWTUserBundle\Util\TimestampableTrait as Timestampable;
 
 /**
  * User.
  *
  * @ORM\MappedSuperClass
- * @JMS\ExclusionPolicy("all")
  */
 class User extends BaseUser
 {
-    use Timestampable;
+    use TimestampableTrait;
 
     /**
      * @var string
-     *
-     * @JMS\Expose
      */
     protected $email;
 

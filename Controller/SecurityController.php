@@ -10,11 +10,8 @@
  */
 namespace RCH\JWTUserBundle\Controller;
 
-use FOS\RestBundle\Controller\Annotations as Rest;
-use FOS\RestBundle\Request\ParamFetcher;
 use FOS\UserBundle\Model\UserInterface;
 use Gesdinet\JWTRefreshTokenBundle\Entity\RefreshToken;
-use RCH\JWTUserBundle\Exception\AlreadyExistingUserException;
 use RCH\JWTUserBundle\Exception\InvalidPropertyUserException;
 use RCH\JWTUserBundle\Exception\UserException;
 use RCH\JWTUserBundle\Validator\Constraints\Email;
@@ -38,10 +35,10 @@ class SecurityController extends Controller
      */
     public function registerAction()
     {
-        $paramFetcher = $this->get('rch_jwt_user.param_fetcher');
+        $paramFetcher = $this->get('rch_jwt_user.credential_fetcher');
         $userManager = $this->container->get('fos_user.user_manager');
 
-        $paramFetcher->setRequirements(array(
+        $paramFetcher->create(array(
             'email'    => array(
                 'requirements' => array(new Email(), new UniqueEntity('email')),
                 'class'        => new User(),
@@ -49,66 +46,42 @@ class SecurityController extends Controller
             'password' => array('requirements' => '[^/]+'),
         ));
 
-        $data = array(
-            'email'    => $paramFetcher->get('email'),
-            'password' => $paramFetcher->get('password'),
-        );
-
-        // if ($userManager->findUserByEmail($data['email']) !== null) {
-        //     throw new AlreadyExistingUserException(sprintf('An user with email \'%s\' already exists', $data['email']));
-        // }
+        $data = $paramFetcher->all();
 
         $user = $this->createUser($data);
 
-        return new JsonResponse($this->generateToken($user), 201);
+        return $this->generateToken($user, 201);
     }
 
     /**
-     * Processes user authentication from email/password.
-     *
-     * @Rest\Post("/login")
-     * @Rest\View(statusCode=200)
-     *
-     * @Rest\RequestParam(name="email", requirements=@Email, nullable=false, allowBlank=false)
-     * @Rest\RequestParam(name="password", requirements="[^/]+", nullable=false, allowBlank=false)
+     * Registers and authenticates User from a facebook OAuth Response.
      *
      * @return object The authentication token
      */
-    public function loginAction()
+    public function loginFromOAuthResponseAction()
     {
-        /* Virtual method originally handled by Security Component */
-    }
-
-    /**
-     * Register/Authenticate user from OAuth Response.
-     *
-     * @Rest\Post("/oauth/login")
-     * @Rest\View(statusCode=200)
-     *
-     * @Rest\RequestParam(name="email", requirements=@Email, nullable=false, allowBlank=false)
-     * @Rest\RequestParam(name="facebook_id", requirements="\d+", nullable=false, allowBlank=false)
-     * @Rest\RequestParam(name="facebook_access_token", requirements="[^/]", nullable=false, allowBlank=false)
-     *
-     * @param ParemFetcher $paramFetcher
-     *
-     * @return object The authentication token
-     */
-    public function loginFromOAuthResponseAction(ParamFetcher $paramFetcher)
-    {
-        $data = $paramFetcher->all();
+        $paramFetcher = $this->get('rch_jwt_user.credential_fetcher');
         $userManager = $this->container->get('fos_user.user_manager');
+
+        $paramFetcher->create(array(
+            'email'    => array('requirements' => new Email()),
+            'facebook_id' => array('requirements' => '\d+'),
+            'facebook_access_token' => array('requirements' => '[^/]+'),
+        ));
+
+        $data = $paramFetcher->all();
 
         if (false === $this->isValidFacebookAccount($data['facebook_id'], $data['facebook_access_token'])) {
             throw new InvalidPropertyUserException(422, 'The given facebook_id does not correspond to a valid acount');
         }
 
-        $existingByFacebookId = $userManager->findUserBy(['facebookId' => $data['facebook_id']]);
+        $existingByFacebookId = $userManager->findUserBy(array('facebookId' => $data['facebook_id']));
 
         if (is_object($existingByFacebookId)) {
             return $this->generateToken($existingByFacebookId);
         }
 
-        $existingByEmail = $userManager->findUserBy(['email' => $data['email']]);
+        $existingByEmail = $userManager->findUserBy(array('email' => $data['email']));
 
         if (is_object($existingByEmail)) {
             $existingByEmail->setFacebookId($data['facebook_id']);
@@ -119,7 +92,7 @@ class SecurityController extends Controller
 
         $data['password'] = $this->generateRandomPassword();
 
-        return $this->generateToken($this->createUser($data, true));
+        return $this->generateToken($this->createUser($data));
     }
 
     /**
@@ -147,7 +120,9 @@ class SecurityController extends Controller
         try {
             $userManager->updateUser($user);
         } catch (\Exception $e) {
-            throw new UserException(422, $e->getMessage() ?: 'An error occured while creating the user.', $e);
+            $message = $e->getMessage() ?: 'An error occured while creating the user.';
+
+            throw new UserException(422, $message, $e);
         }
 
         return $user;
@@ -161,15 +136,15 @@ class SecurityController extends Controller
      *
      * @return array Response body containing the User and its tokens
      */
-    protected function generateToken(UserInterface $user)
+    protected function renderToken(UserInterface $user, $statusCode = 200)
     {
-        $response = array(
+        $body = array(
             'token'         => $this->container->get('lexik_jwt_authentication.jwt_manager')->create($user),
             'refresh_token' => $this->attachRefreshToken($user),
             'user'          => $user->getUsername(),
         );
 
-        return $response;
+        return new JsonResponse($body, $statusCode);
     }
 
     /**

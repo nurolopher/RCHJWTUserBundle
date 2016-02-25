@@ -22,6 +22,6 @@ class Email extends BaseEmailConstraint
 {
     public function __toString()
     {
-        return 'Email';
+        return '@Email';
     }
 }

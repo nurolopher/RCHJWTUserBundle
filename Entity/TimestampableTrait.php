@@ -1,7 +1,12 @@
 <?php
 
-namespace RCH\JWTUserBundle\Util;
+namespace RCH\JWTUserBundle\Entity;
 
+/**
+ * Timestampable Trait.
+ *
+ * @author Robin Chalas <robin.chalas@gmail.com>
+ */
 trait TimestampableTrait
 {
     /**

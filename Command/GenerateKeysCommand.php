@@ -10,7 +10,6 @@
  */
 namespace RCH\JWTUserBundle\Command;
 
-use RCH\JWTUserBundle\Util\OutputHelperTrait as OutputHelper;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -19,9 +18,14 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
+/**
+ * Generates RSA Keys for LexikJWT.
+ *
+ * @author Robin Chalas <robin.chalas@gmail.com>
+ */
 class GenerateKeysCommand extends ContainerAwareCommand
 {
-    use OutputHelper;
+    use OutputHelperTrait;
 
     /**
      * {@inheritdoc}
@@ -75,17 +79,9 @@ class GenerateKeysCommand extends ContainerAwareCommand
      */
     protected function generatePrivateKey($path, $passphrase, OutputInterface $output)
     {
-        $processArgs = 'genrsa '
-            .sprintf('-out %s/private.pem  -aes256 ', $path)
-            .sprintf('-passout pass:%s ', $passphrase)
-            .'4096'
-        ;
+        $processArgs = sprintf('genrsa -out %s/private.pem  -aes256 -passout pass:%s 4096', $path, $passphrase);
 
-        try {
-            $this->generateKey($processArgs, $output);
-        } catch (ProcessFailedException $e) {
-            $output->writeln('<error>An error occured while generating the private key.</error>');
-        }
+        $this->generateKey($processArgs, $output);
     }
 
     /**
@@ -94,28 +90,21 @@ class GenerateKeysCommand extends ContainerAwareCommand
      * @param string          $path
      * @param string          $passphrase
      * @param OutputInterface $output
-     *
-     * @throws ProcessFailedException
      */
     protected function generatePublicKey($path, $passphrase, OutputInterface $output)
     {
-        $processArgs = 'rsa '
-            .sprintf('-pubout -in %s/private.pem ', $path)
-            .sprintf('-out %s/public.pem ', $path)
-            .sprintf('-passin pass:%s', $passphrase)
-        ;
+        $processArgs = sprintf('rsa -pubout -in %s/private.pem -out %s/public.pem -passin pass:%s', $path, $path, $passphrase);
 
-        try {
-            $this->generateKey($processArgs, $output);
-        } catch (ProcessFailedException $e) {
-            $output->writeln('<error>An error occured while generating the public key.</error>');
-        }
+        $this->generateKey($processArgs, $output);
     }
 
     /**
      * Generate a RSA key.
      *
-     * @param array $args
+     * @param string          $processArgs
+     * @param Outputinterface $output
+     *
+     * @throws ProcessFailedException
      */
     protected function generateKey($processArgs, OutputInterface $output)
     {

@@ -17,7 +17,7 @@ use Lexik\Bundle\JWTAuthenticationBundle\Event\AuthenticationSuccessEvent;
  *
  * @author Robin Chalas <robin.chalas@gmail.com>
  */
-class JWTResponseListener
+class JwtResponseListener
 {
     /**
      * Add public data to the authentication response.
@@ -27,8 +27,7 @@ class JWTResponseListener
     public function onAuthenticationSuccessResponse(AuthenticationSuccessEvent $event)
     {
         $data = $event->getData();
-        $email = $event->getUser() ? $event->getUser()->getUsername() : '';
-        $data['user'] = array('email' => $email);
+        $data['user'] = $event->getUser()->getUsername();
 
         $event->setData($data);
     }
