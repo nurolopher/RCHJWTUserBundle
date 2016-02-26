@@ -53,6 +53,18 @@ class SecurityController extends Controller
         return $this->generateToken($user, 201);
     }
 
+
+    /**
+     * Processes user authentication from email/password.
+     *
+     * @return JsonResponse The authentication token
+     */
+    public function loginAction()
+    {
+        throw new \RuntimeException('You must configure the check path to be handled by the firewall using form_login in your security firewall configuration.');
+    }
+
+
     /**
      * Registers and authenticates User from a facebook OAuth Response.
      *

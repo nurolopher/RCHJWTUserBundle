@@ -17,7 +17,7 @@ use Lexik\Bundle\JWTAuthenticationBundle\Event\AuthenticationSuccessEvent;
  *
  * @author Robin Chalas <robin.chalas@gmail.com>
  */
-class JwtResponseListener
+class JWTResponseListener
 {
     /**
      * Add public data to the authentication response.

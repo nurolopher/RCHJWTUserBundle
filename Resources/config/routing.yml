@@ -4,6 +4,12 @@ security_register:
     requirements:
         methods: POST
 
+security_login:
+    path:    /login
+    defaults: { _controller: RCHJWTUserBundle:Security:loginFromOAuthResponse }
+    requirements:
+        methods: POST
+
 security_oauth_login:
     path:    /oauth/login
     defaults: { _controller: RCHJWTUserBundle:Security:loginFromOAuthResponse }
