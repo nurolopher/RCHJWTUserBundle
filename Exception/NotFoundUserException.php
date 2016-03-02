@@ -8,7 +8,6 @@
  * For more informations about license, please see the LICENSE
  * file distributed in this source code.
  */
-
 namespace RCH\JWTUserBundle\Exception;
 
 /**
@@ -27,6 +26,6 @@ class NotFoundUserException extends UserException
      */
     public function __construct($message = 'The given user cannot be found.', \Exception $previous = null, $code = 0)
     {
-        parent::__construct(404, $message, $previous, $code);
+        parent::__construct(404, $message, $previous, array(), $code);
     }
 }

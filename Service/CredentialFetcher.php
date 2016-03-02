@@ -8,49 +8,44 @@
  * For more informations about license, please see the LICENSE
  * file distributed in this source code.
  */
-
 namespace RCH\JWTUserBundle\Service;
 
+use RCH\JWTUserBundle\Exception\BadRequestUserException;
 use RCH\JWTUserBundle\Request\Param;
-use RCH\JWTUsetBundle\Exception\BadRequestUserException;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait as Container;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Validator\Constraints\Regex;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Component\Validator\ValidatorInterface as LegacyValidatorInterface;
 
 /**
- * Fetchs params in the body of a Request instance.
+ * Fetches params in the body of the current Request.
  *
  * @author Robin Chalas <robin.chalas@gmail.com>
  */
-class CredentialFetcher implements ContainerAwareInterface
+class CredentialFetcher
 {
+    use Container;
+
+    /** @var RequestStack */
     protected $requestStack;
+
+    /** @var ValidatorInterface */
     protected $validator;
+
+    /** @var array */
     protected $methodRequirements;
-    protected $options;
-    protected $container;
 
     /**
      * Constructor.
      *
-     * @param Request|RequestStack                        $request
-     * @param ValidatorInterface|LegacyValidatorInterface $validator
-     * @param array                                       $methodRequirements
+     * @param RequestStack       $request
+     * @param ValidatorInterface $validator
      */
-    public function __construct($requestStack = null, $validator = null)
+    public function __construct(RequestStack $requestStack, ValidatorInterface $validator)
     {
-        if (!($requestStack instanceof RequestStack) && !($requestStack instanceof Request)) {
-            throw new \InvalidArgumentException(
-                sprintf('Argument 1 of %s constructor must be either an instance of Symfony\Component\HttpFoundation\Request or Symfony\Component\HttpFoundation\RequestStack.', get_class($this))
-            );
-        }
-
         $this->requestStack = $requestStack;
         $this->validator = $validator;
     }
@@ -63,16 +58,8 @@ class CredentialFetcher implements ContainerAwareInterface
     public function create(array $methodRequirements)
     {
         $this->methodRequirements = $methodRequirements;
-    }
 
-    /**
-     * Sets the Container.
-     *
-     * @param ContainerInterface $container A ContainerInterface instance
-     */
-    public function setContainer(ContainerInterface $container = null)
-    {
-        $this->container = $container;
+        return $this;
     }
 
     /**
@@ -120,12 +107,13 @@ class CredentialFetcher implements ContainerAwareInterface
             );
         }
 
-        if (($config->default && $param === $config->default || ($param === null && true === $config->nullable)
-        || (null === $config->requirements)) {
+        if (($config->default && $param === $config->default
+        || ($param === null && true === $config->nullable)
+        || (null === $config->requirements))) {
             return $param;
         }
 
-        $this->handleRequirements($config, $param);
+        $this->validateParam($config, $param);
 
         return $param;
     }
@@ -139,7 +127,7 @@ class CredentialFetcher implements ContainerAwareInterface
      *
      * @return Param
      */
-    private function handleRequirements(Param $config, $param)
+    private function validateParam(Param $config, $param)
     {
         $name = $config->name;
 
@@ -157,25 +145,21 @@ class CredentialFetcher implements ContainerAwareInterface
                 continue;
             }
 
-            if (!($this->validator instanceof ValidatorInterface)) {
-                $errors = $this->validator->validateValue($param, $constraint);
-            } else {
-                if ($constraint instanceof UniqueEntity) {
-                    $object = $config->class;
-                    $accessor = PropertyAccess::createPropertyAccessor();
+            if ($constraint instanceof UniqueEntity) {
+                $object = $config->class;
+                $accessor = PropertyAccess::createPropertyAccessor();
 
-                    if ($accessor->isWritable($object, $name)) {
-                        $accessor->setValue($object, $name, $param);
-                    } else {
-                        throw new BadRequestUserException(
-                            sprintf('The @UniqueEntity constraint must be used on an existing property. The class "%s" does not have a property "%s"', get_class($object), $name)
-                        );
-                    }
-
-                    $errors = $this->validator->validate($object, $constraint);
+                if ($accessor->isWritable($object, $name)) {
+                    $accessor->setValue($object, $name, $param);
                 } else {
-                    $errors = $this->validator->validate($param, $constraint);
+                    throw new BadRequestUserException(
+                        sprintf('The @UniqueEntity constraint must be used on an existing property. The class "%s" does not have a property "%s"', get_class($object), $name)
+                    );
                 }
+
+                $errors = $this->validator->validate($object, $constraint);
+            } else {
+                $errors = $this->validator->validate($param, $constraint);
             }
 
             if (0 !== count($errors)) {
@@ -194,7 +178,7 @@ class CredentialFetcher implements ContainerAwareInterface
     {
         return sprintf(
             false === $invalidValue
-            ? "Request parameter %s must be set"
+            ? 'Request parameter %s must be set'
             : "Request parameter %s value '%s' violated a requirement (%s)",
             $key,
             $invalidValue,

@@ -35,6 +35,8 @@ class Param
     /** @var bool */
     public $required = true;
 
+    public $class = null;
+
     /**
      * Constructor.
      *
@@ -53,13 +55,12 @@ class Param
     {
         $this->setRequirements();
 
-        foreach ($this->options as $option) {
-            if ((null === $option && null === $this->$option)
-            || is_bool($this->$option) && !(is_bool($option))) {
+        foreach ($this->options as $key => $option) {
+            if (null === $option && null === $this->$option) {
                 continue;
             }
 
-            $this->$option = $option;
+            $this->$key = $option;
         }
 
         return $this;

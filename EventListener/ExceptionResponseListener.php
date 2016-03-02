@@ -3,9 +3,9 @@
 namespace RCH\JWTUserBundle\EventListener;
 
 use RCH\JWTUserBundle\Exception\UserException;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Listens for exceptions and transform Response.
@@ -46,7 +46,7 @@ class ExceptionResponseListener
     /**
      * Create JsonResponse for Exception.
      *
-     * @param  UserException $exception
+     * @param UserException $exception
      *
      * @return JsonResponse
      */

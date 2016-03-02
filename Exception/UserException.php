@@ -8,7 +8,6 @@
  * For more informations about license, please see the LICENSE
  * file distributed in this source code.
  */
-
 namespace RCH\JWTUserBundle\Exception;
 
 /**
@@ -21,19 +20,20 @@ class UserException extends \RuntimeException
 {
     private $statusCode;
 
-    /**
-     * Constructor.
-     *
-     * @param int             $statusCode
-     * @param string|null     $message
-     * @param \Exception|null $previous
-     */
-    public function __construct($statusCode = 500, $message = null, \Exception $previous = null, $code = 0)
-    {
-        $this->statusCode = $statusCode;
+     /**
+      * Constructor.
+      *
+      * @param int             $statusCode
+      * @param string|null     $message
+      * @param \Exception|null $previous
+      */
+     public function __construct($statusCode, $message = null, \Exception $previous = null, array $headers = array(), $code = 0)
+     {
+         $this->statusCode = $statusCode;
+         $this->headers = $headers;
 
-        parent::__construct($message, $code, $previous);
-    }
+         parent::__construct($message, $code, $previous);
+     }
 
     /**
      * Get statusCode.

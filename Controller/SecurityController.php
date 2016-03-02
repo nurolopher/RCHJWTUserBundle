@@ -44,7 +44,7 @@ class SecurityController extends Controller
 
         $user = $this->createUser($paramFetcher->all());
 
-        return $this->generateToken($user, 201);
+        return $this->renderToken($user, 201);
     }
 
     /**
@@ -82,7 +82,7 @@ class SecurityController extends Controller
         $existingByFacebookId = $userManager->findUserBy(array('facebookId' => $data['facebook_id']));
 
         if (is_object($existingByFacebookId)) {
-            return $this->generateToken($existingByFacebookId);
+            return $this->renderToken($existingByFacebookId);
         }
 
         $existingByEmail = $userManager->findUserBy(array('email' => $data['email']));
@@ -91,12 +91,12 @@ class SecurityController extends Controller
             $existingByEmail->setFacebookId($data['facebook_id']);
             $userManager->updateUser($existingByEmail);
 
-            return $this->generateToken($existingByEmail);
+            return $this->renderToken($existingByEmail);
         }
 
         $data['password'] = $this->generateRandomPassword();
 
-        return $this->generateToken($this->createUser($data));
+        return $this->renderToken($this->createUser($data));
     }
 
     /**
@@ -208,6 +208,6 @@ class SecurityController extends Controller
     {
         $tokenGenerator = $this->container->get('fos_user.util.token_generator');
 
-        return substr($tokenGenerator->generateToken(), 0, 8);
+        return substr($tokenGenerator->renderToken(), 0, 8);
     }
 }

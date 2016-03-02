@@ -138,7 +138,7 @@ class GenerateKeysCommand extends ContainerAwareCommand
     }
 
     /**
-     * Write in parameters.yml
+     * Write in parameters.yml.
      *
      * @param string $rootDir
      * @param string $keysPath
@@ -150,9 +150,9 @@ class GenerateKeysCommand extends ContainerAwareCommand
     {
         $config = array(
             'lexik_jwt_authentication' => array(
-                'private_key_path' => "%jwt_private_key_path%"
-                'public_key_path'  => "%jwt_public_key_path%"
-                'pass_phrase'      => "%jwt_key_pass_phrase%",
+                'private_key_path' => '%jwt_private_key_path%',
+                'public_key_path'  => '%jwt_public_key_path%',
+                'pass_phrase'      => '%jwt_key_pass_phrase%',
             ),
         );
 
