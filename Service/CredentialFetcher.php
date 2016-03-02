@@ -12,7 +12,6 @@ namespace RCH\JWTUserBundle\Service;
 
 use RCH\JWTUserBundle\Request\Param;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\DependencyInjection\ContainerAware;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,7 +27,7 @@ use Symfony\Component\Validator\ValidatorInterface as LegacyValidatorInterface;
  *
  * @author Robin Chalas <robin.chalas@gmail.com>
  */
-class CredentialFetcher extends ContainerAware implements ContainerAwareInterface
+class CredentialFetcher implements ContainerAwareInterface
 {
     protected $requestStack;
     protected $validator;
