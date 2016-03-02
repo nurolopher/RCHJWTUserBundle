@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the RCHJWTUserBundle package.
+ * This file is part of the RCH package.
  *
  * Robin Chalas <robin.chalas@gmail.com>
  *
@@ -53,7 +53,6 @@ class SecurityController extends Controller
         return $this->generateToken($user, 201);
     }
 
-
     /**
      * Processes user authentication from email/password.
      *
@@ -63,7 +62,6 @@ class SecurityController extends Controller
     {
         throw new \RuntimeException('You must configure the check path to be handled by the firewall using form_login in your security firewall configuration.');
     }
-
 
     /**
      * Registers and authenticates User from a facebook OAuth Response.
@@ -76,14 +74,14 @@ class SecurityController extends Controller
         $userManager = $this->container->get('fos_user.user_manager');
 
         $paramFetcher->create(array(
-            'email'    => array('requirements' => new Email()),
-            'facebook_id' => array('requirements' => '\d+'),
+            'email'                 => array('requirements' => new Email()),
+            'facebook_id'           => array('requirements' => '\d+'),
             'facebook_access_token' => array('requirements' => '[^/]+'),
         ));
 
         $data = $paramFetcher->all();
 
-        if (false === $this->isValidFacebookAccount($data['facebook_id'], $data['facebook_access_token'])) {
+        if (true !== $this->isValidFacebookAccount($data['facebook_id'], $data['facebook_access_token'])) {
             throw new InvalidPropertyUserException(422, 'The given facebook_id does not correspond to a valid acount');
         }
 

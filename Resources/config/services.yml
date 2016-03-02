@@ -11,3 +11,10 @@ services:
         class: RCH\JWTUserBundle\EventListener\JWTResponseListener
         tags:
             - { name: kernel.event_listener, event: lexik_jwt_authentication.on_authentication_success, method: onAuthenticationSuccessResponse }
+
+    rch_jwt_user.exception_response_listener:
+        class: RCH\JWTUserBundle\EventListener\ExceptionResponseListener
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception, method: onKernelResponse }
+        calls:
+            - [ setContainer, [ "@service_container" ] ]

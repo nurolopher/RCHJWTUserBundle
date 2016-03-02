@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the RCHJWTUserBundle package.
+ * This file is part of the RCH package.
  *
  * Robin Chalas <robin.chalas@gmail.com>
  *
@@ -17,6 +17,11 @@ use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Yaml\Dumper;
+
+// TODO :
+// - generate lexik_jwt config and parameters yml
+// - Create exceptionresponselistener depending on 'rch_jwt_user.exception_listener.format'
 
 /**
  * Generates RSA Keys for LexikJWT.
@@ -26,6 +31,10 @@ use Symfony\Component\Process\Process;
 class GenerateKeysCommand extends ContainerAwareCommand
 {
     use OutputHelperTrait;
+
+    protected $configTemplate = '
+
+';
 
     /**
      * {@inheritdoc}
@@ -49,14 +58,15 @@ class GenerateKeysCommand extends ContainerAwareCommand
         $questionHelper = $this->getHelper('question');
         $passphrase = $questionHelper->ask($input, $output, $question);
 
-        if (!$passphrase) {
+        if (!$passphrase || 'random' == $passphrase) {
             $passphrase = random_bytes(10);
         }
 
+        $path = $kernelRootDir.'/jwt';
+
+        /* Compatibility Symfony3 directory structure */
         if (is_writable($kernelRootDir.'/../var')) {
             $path = $kernelRootDir.'/../var/jwt';
-        } else {
-            $path = $kernelRootDir.'/var/jwt';
         }
 
         $fs = new FileSystem();
@@ -122,5 +132,42 @@ class GenerateKeysCommand extends ContainerAwareCommand
         }
 
         $process->getExitCode();
+    }
+
+    /**
+     * Write in parameters.yml
+     *
+     * @param string $rootDir
+     * @param string $keysPath
+     * @param string $passphrass
+     *
+     * @return array $config
+     */
+    protected function writeParameters($rootDir, $keysPath, $passphrase)
+    {
+        $config = array(
+            'lexik_jwt_authentication' => array(
+                'private_key_path' => "%jwt_private_key_path%"
+                'public_key_path'  => "%jwt_public_key_path%"
+                'pass_phrase'      => "%jwt_key_pass_phrase%",
+            ),
+        );
+
+        $parameters = array(
+            'lexik_jwt_authentication' => array(
+                'jwt_private_key_path' => $keysPath.'/private.pem',
+                'jwt_public_key_path'  => $keysPath.'/public.pem',
+                'jwt_key_pass_phrase'  => $passphrase,
+            ),
+        );
+
+        $dumper = new Dumper();
+        $yamlParameters = $dumper->dump($parameters);
+        $yamlConfig = $dumper->dump($config);
+        $parametersPath = $rootDir.'/config/parameters.yml';
+
+        file_put_contents($path.'.dist', $yamlParameters);
+
+        return $config;
     }
 }

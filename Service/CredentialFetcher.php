@@ -1,21 +1,22 @@
 <?php
 
 /**
- * This file is part of the RCHJWTUserBundle package.
+ * This file is part of the RCH package.
  *
  * Robin Chalas <robin.chalas@gmail.com>
  *
  * For more informations about license, please see the LICENSE
  * file distributed in this source code.
  */
+
 namespace RCH\JWTUserBundle\Service;
 
 use RCH\JWTUserBundle\Request\Param;
+use RCH\JWTUsetBundle\Exception\BadRequestUserException;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Validator\Constraints\Regex;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -98,28 +99,27 @@ class CredentialFetcher
      */
     public function get($name)
     {
-        $param = $this->getRequest()->request->get($name);
-
         if (!$paramConfig = $this->methodRequirements[$name]) {
             return;
         }
 
         $config = new Param($name, $paramConfig);
 
-        if (true === $config->required && !($this->isParameterSet($name))) {
-            throw new BadRequestHttpException(
-                $this->formatError($name, $param, 'The parameter must be set')
+        if (true === $config->required && !($this->getRequest()->request->has($name))) {
+            throw new BadRequestUserException(
+                $this->formatError($name, false, 'The parameter must be set')
             );
         }
 
+        $param = $this->getRequest()->request->get($name);
+
         if (false === $config->nullable && !$param) {
-            throw new BadRequestHttpException(
+            throw new BadRequestUserException(
                 $this->formatError($name, $param, 'The parameter cannot be null')
             );
         }
 
-        if (($config->default && $param === $config->default)
-        || ($param === null && true === $config->nullable)
+        if (($config->default && $param === $config->default || ($param === null && true === $config->nullable)
         || (null === $config->requirements)) {
             return $param;
         }
@@ -134,7 +134,7 @@ class CredentialFetcher
      *
      * @param Param $param
      *
-     * @throws BadRequestHttpException If the param is not valid
+     * @throws BadRequestUserException If the param is not valid
      *
      * @return Param
      */
@@ -166,7 +166,7 @@ class CredentialFetcher
                     if ($accessor->isWritable($object, $name)) {
                         $accessor->setValue($object, $name, $param);
                     } else {
-                        throw new BadRequestHttpException(
+                        throw new BadRequestUserException(
                             sprintf('The @UniqueEntity constraint must be used on an existing property. The class "%s" does not have a property "%s"', get_class($object), $name)
                         );
                     }
@@ -179,7 +179,7 @@ class CredentialFetcher
 
             if (0 !== count($errors)) {
                 $error = $errors[0];
-                throw new BadRequestHttpException(
+                throw new BadRequestUserException(
                     $this->formatError($name, $error->getInvalidValue(), $error->getMessage())
                 );
             }
@@ -192,25 +192,13 @@ class CredentialFetcher
     private function formatError($key, $invalidValue, $errorMessage)
     {
         return sprintf(
-            "Request parameter %s value '%s' violated a requirement (%s)",
+            false === $invalidValue
+            ? "Request parameter %s must be set"
+            : "Request parameter %s value '%s' violated a requirement (%s)",
             $key,
             $invalidValue,
             $errorMessage
         );
-    }
-
-    /**
-     * Is parameter set in request ParameterBag.
-     *
-     * @param string $name
-     *
-     * @return bool
-     */
-    private function isParameterSet($name)
-    {
-        $requestParameters = $this->getRequest()->request->all();
-
-        return isset($requestParameters[$name]);
     }
 
     /**

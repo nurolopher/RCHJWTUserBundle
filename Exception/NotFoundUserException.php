@@ -1,13 +1,14 @@
 <?php
 
 /**
- * This file is part of the RCHJWTUserBundle package.
+ * This file is part of the RCH package.
  *
  * Robin Chalas <robin.chalas@gmail.com>
  *
  * For more informations about license, please see the LICENSE
  * file distributed in this source code.
  */
+
 namespace RCH\JWTUserBundle\Exception;
 
 /**
