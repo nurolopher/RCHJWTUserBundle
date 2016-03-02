@@ -19,10 +19,6 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Dumper;
 
-// TODO :
-// - generate lexik_jwt config and parameters yml
-// - Create exceptionresponselistener depending on 'rch_jwt_user.exception_listener.format'
-
 /**
  * Generates RSA Keys for LexikJWT.
  *
@@ -138,7 +134,7 @@ class GenerateKeysCommand extends ContainerAwareCommand
     }
 
     /**
-     * Write in parameters.yml.
+     * Write in parameters.yml (work in progress).
      *
      * @param string $rootDir
      * @param string $keysPath
@@ -146,7 +142,7 @@ class GenerateKeysCommand extends ContainerAwareCommand
      *
      * @return array $config
      */
-    protected function writeParameters($rootDir, $keysPath, $passphrase)
+    protected function writeParameters($rootDir, $keysPath, $passphrase, OutputInterface $output)
     {
         $config = array(
             'lexik_jwt_authentication' => array(
@@ -166,10 +162,10 @@ class GenerateKeysCommand extends ContainerAwareCommand
 
         $dumper = new Dumper();
         $yamlParameters = $dumper->dump($parameters);
-        $yamlConfig = $dumper->dump($config);
         $parametersPath = $rootDir.'/config/parameters.yml';
 
-        file_put_contents($path.'.dist', $yamlParameters);
+        $output->writeln($dumper->dump($config));
+        file_put_contents($parametersPath.'.dist', $yamlParameters);
 
         return $config;
     }
