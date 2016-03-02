@@ -60,7 +60,10 @@ class GenerateKeysCommand extends ContainerAwareCommand
         }
 
         $fs = new FileSystem();
-        $fs->mkdir($path);
+
+        if (!$fs->exists($path)) {
+            $fs->mkdir($path);
+        }
 
         $this->generatePrivateKey($path, $passphrase, $output);
         $this->generatePublicKey($path, $passphrase, $output);
