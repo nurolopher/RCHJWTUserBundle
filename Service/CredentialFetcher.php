@@ -13,7 +13,6 @@ namespace RCH\JWTUserBundle\Service;
 use RCH\JWTUserBundle\Request\Param;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\DependencyInjection\ContainerAware;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -27,7 +26,7 @@ use Symfony\Component\Validator\ValidatorInterface as LegacyValidatorInterface;
  *
  * @author Robin Chalas <robin.chalas@gmail.com>
  */
-class CredentialFetcher extends ContainerAware
+class CredentialFetcher
 {
     protected $requestStack;
     protected $validator;
@@ -222,11 +221,9 @@ class CredentialFetcher extends ContainerAware
     private function getRequest()
     {
         if ($this->requestStack instanceof Request) {
-            return $this->requestStack;
+            $request = $this->requestStack;
         } elseif ($this->requestStack instanceof RequestStack) {
             $request = $this->requestStack->getCurrentRequest();
-        } else {
-            $request = $this->container->get('request');
         }
 
         if ($request !== null) {
