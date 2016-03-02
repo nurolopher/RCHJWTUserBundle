@@ -34,14 +34,6 @@
     "autoload": {
         "psr-4": { "RCH\\JWTUserBundle\\": "" }
     },
-    "scripts": {
-        "post-install-cmd": [
-            "php app/console rch:jwt:generate-keys"
-        ],
-        "post-update-cmd": [
-            "php app/console rch:jwt:generate-keys"
-        ]
-    },
     "extra": {
         "branch-alias": {
             "dev-master": "1.0.x-dev"

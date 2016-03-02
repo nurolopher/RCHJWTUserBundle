@@ -18,7 +18,6 @@ use RCH\JWTUserBundle\Validator\Constraints\Email;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use UserBundle\Entity\User;
 
 /**
@@ -35,20 +34,15 @@ class SecurityController extends Controller
      */
     public function registerAction()
     {
-        $paramFetcher = $this->get('rch_jwt_user.credential_fetcher');
-        $userManager = $this->container->get('fos_user.user_manager');
-
-        $paramFetcher->create(array(
-            'email'    => array(
-                'requirements' => array(new Email(), new UniqueEntity('email')),
-                'class'        => new User(),
-            ),
-            'password' => array('requirements' => '[^/]+'),
+        $paramFetcher = $this->get('rch_jwt_user.credential_fetcher')->create(array(
+                'email' => array(
+                    'requirements' => array(new Email(), new UniqueEntity('email')),
+                    'class'        => new User(),
+                ),
+                'password' => array('requirements' => '[^/]+'),
         ));
 
-        $data = $paramFetcher->all();
-
-        $user = $this->createUser($data);
+        $user = $this->createUser($paramFetcher->all());
 
         return $this->generateToken($user, 201);
     }
