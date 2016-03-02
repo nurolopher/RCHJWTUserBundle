@@ -39,9 +39,10 @@ class CredentialFetcher
      *
      * @param Request|RequestStack                        $request
      * @param ValidatorInterface|LegacyValidatorInterface $validator
+     * @param ContainerInterface|null                     $container
      * @param array                                       $methodRequirements
      */
-    public function __construct($requestStack = null, $validator = null)
+    public function __construct($requestStack = null, $validator = null, ContainerInterface $container = null)
     {
         if (!($requestStack instanceof RequestStack) && !($requestStack instanceof Request)) {
             throw new \InvalidArgumentException(
@@ -51,6 +52,7 @@ class CredentialFetcher
 
         $this->requestStack = $requestStack;
         $this->validator = $validator;
+        $this->container = $container;
     }
 
     /**
@@ -61,16 +63,6 @@ class CredentialFetcher
     public function create(array $methodRequirements)
     {
         $this->methodRequirements = $methodRequirements;
-    }
-
-    /**
-     * Sets the Container.
-     *
-     * @param ContainerInterface $container A ContainerInterface instance
-     */
-    public function setContainer(ContainerInterface $container = null)
-    {
-        $this->container = $container;
     }
 
     /**
