@@ -1,5 +1,5 @@
 {
-    "name": "chalasr/jwt-user-bundle",
+    "name": "rch/jwt-user-bundle",
     "description": "Json Web Token authentication bundle including FOSUserBundle integration",
     "keywords": ["jwt", "authentication", "user", "token", "rest"],
     "type": "symfony-bundle",
