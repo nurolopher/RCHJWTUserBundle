@@ -27,8 +27,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  */
 class CredentialFetcher
 {
-    use Container;
-
     /** @var RequestStack */
     protected $requestStack;
 

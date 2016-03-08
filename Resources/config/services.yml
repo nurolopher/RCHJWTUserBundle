@@ -4,8 +4,6 @@ services:
         arguments:
             requestStack: @request_stack
             validator: @validator
-        calls:
-            - [ setContainer, [ "@service_container" ] ]
 
     rch_jwt_user.jwt_response_listener:
         class: RCH\JWTUserBundle\EventListener\JwtResponseListener
@@ -16,5 +14,3 @@ services:
         class: RCH\JWTUserBundle\EventListener\ExceptionResponseListener
         tags:
             - { name: kernel.event_listener, event: kernel.exception, method: onKernelResponse }
-        calls:
-            - [ setContainer, [ "@service_container" ] ]
