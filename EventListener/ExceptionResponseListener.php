@@ -3,7 +3,6 @@
 namespace RCH\JWTUserBundle\EventListener;
 
 use RCH\JWTUserBundle\Exception\UserException;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait as Container;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 

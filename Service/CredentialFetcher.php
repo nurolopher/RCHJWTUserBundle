@@ -13,7 +13,6 @@ namespace RCH\JWTUserBundle\Service;
 use RCH\JWTUserBundle\Exception\BadRequestUserException;
 use RCH\JWTUserBundle\Request\Param;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait as Container;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\PropertyAccess\PropertyAccess;
