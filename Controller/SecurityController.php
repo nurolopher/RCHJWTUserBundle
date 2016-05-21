@@ -15,10 +15,10 @@ use FOS\UserBundle\Model\UserInterface;
 use Gesdinet\JWTRefreshTokenBundle\Entity\RefreshToken;
 use RCH\JWTUserBundle\Exception\InvalidPropertyUserException;
 use RCH\JWTUserBundle\Exception\UserException;
-use RCH\JWTUserBundle\Validator\Constraints\Email;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Validator\Constraints\Email;
 use UserBundle\Entity\User;
 
 /**
