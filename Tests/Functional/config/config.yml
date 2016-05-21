@@ -1,0 +1,91 @@
+framework:
+    secret: test
+    router:
+        resource: %kernel.root_dir%/config/routing.yml
+    validation: { enable_annotations: true }
+    templating:
+        engines: ['twig']
+    default_locale: en
+
+swiftmailer:
+    transport: smtp
+    host:      127.0.0.1
+    port:      "25"
+    username:  ~
+    password:  ~
+    spool:     { type: memory }
+
+lexik_jwt_authentication:
+    private_key_path:   %kernel.root_dir%/var/private.pem
+    public_key_path:    %kernel.root_dir%/var/public.pem
+    pass_phrase:        testing
+
+gesdinet_jwt_refresh_token:
+    ttl: 2592000
+    firewall: api
+
+fos_user:
+    db_driver:      orm
+    firewall_name:  main
+    user_class: RCH\JWTUserBundle\Tests\Stub\User
+
+doctrine:
+    dbal:
+        driver:   pdo_mysql
+        host:     127.0.0.1
+        port:     ~
+        dbname:   "rch_jwt_user_test"
+        user:     "root"
+        password: "root"
+        charset:  UTF8
+
+    orm:
+        auto_generate_proxy_classes: "%kernel.debug%"
+        naming_strategy: doctrine.orm.naming_strategy.underscore
+        auto_mapping: true
+
+security:
+    providers:
+        fos_userbundle:
+            id: fos_user.user_provider.username_email
+    encoders:
+        FOS\UserBundle\Model\UserInterface: sha512
+
+    firewalls:
+        login:
+            pattern:  ^/v1/login
+            stateless: true
+            anonymous: true
+            form_login:
+                provider: fos_userbundle
+                check_path: /v1/login
+                require_previous_session: false
+                username_parameter: email
+                password_parameter: password
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+
+        api:
+            pattern:   ^/v1/
+            stateless: true
+            lexik_jwt: ~
+
+        signup:
+            pattern: ^/v1/register
+            anonymous: true
+            stateless: true
+
+        oauth:
+            pattern: ^/v1/oauth/login
+            anonymous: true
+            stateless: true
+
+        refresh:
+            pattern:  ^/v1/refresh_token
+            stateless: true
+            anonymous: true
+
+        guest:
+            pattern:  ^/v1/guest/login
+            stateless: true
+            anonymous: true

@@ -8,6 +8,7 @@
  * For more informations about license, please see the LICENSE
  * file distributed in this source code.
  */
+
 namespace RCH\JWTUserBundle\Request;
 
 /**
@@ -15,7 +16,7 @@ namespace RCH\JWTUserBundle\Request;
  *
  * @author Robin Chalas <robin.chalas@gmail.com>
  */
-class Param
+class Credential
 {
     /** @var string */
     public $name;

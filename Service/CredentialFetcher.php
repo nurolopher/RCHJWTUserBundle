@@ -8,10 +8,11 @@
  * For more informations about license, please see the LICENSE
  * file distributed in this source code.
  */
+
 namespace RCH\JWTUserBundle\Service;
 
 use RCH\JWTUserBundle\Exception\BadRequestUserException;
-use RCH\JWTUserBundle\Request\Param;
+use RCH\JWTUserBundle\Request\Credential;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -88,7 +89,7 @@ class CredentialFetcher
             return;
         }
 
-        $config = new Param($name, $paramConfig);
+        $config = new Credential($name, $paramConfig);
 
         if (true === $config->required && !($this->getRequest()->request->has($name))) {
             throw new BadRequestUserException(

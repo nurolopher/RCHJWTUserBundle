@@ -1,13 +1,14 @@
 <?php
 
-/**
+/*
  * This file is part of the RCH package.
  *
- * Robin Chalas <robin.chalas@gmail.com>
+ * (c) Robin Chalas <https://github.com/chalasr>
  *
- * For more informations about license, please see the LICENSE
- * file distributed in this source code.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+
 namespace RCH\JWTUserBundle\Controller;
 
 use FOS\UserBundle\Model\UserInterface;
@@ -21,7 +22,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use UserBundle\Entity\User;
 
 /**
- * Security Controller.
+ * JWT Security Controller.
  *
  * @author Robin Chalas <robin.chalas@gmail.com>
  */
@@ -34,13 +35,13 @@ class SecurityController extends Controller
      */
     public function registerAction()
     {
-        $paramFetcher = $this->get('rch_jwt_user.credential_fetcher')->create(array(
-                'email' => array(
-                    'requirements' => array(new Email(), new UniqueEntity('email')),
-                    'class'        => new User(),
-                ),
-                'password' => array('requirements' => '[^/]+'),
-        ));
+        $paramFetcher = $this->get('rch_jwt_user.credential_fetcher')->create([
+            'email' => [
+                'requirements' => array(new Email(), new UniqueEntity('email')),
+                'class'        => new User(),
+            ],
+            'password' => ['requirements' => '[^/]+'],
+        ]);
 
         $user = $this->createUser($paramFetcher->all());
 
@@ -68,9 +69,9 @@ class SecurityController extends Controller
         $userManager = $this->container->get('fos_user.user_manager');
 
         $paramFetcher->create(array(
-            'email'                 => array('requirements' => new Email()),
-            'facebook_id'           => array('requirements' => '\d+'),
-            'facebook_access_token' => array('requirements' => '[^/]+'),
+            'email'                 => ['requirements' => new Email()],
+            'facebook_id'           => ['requirements' => '\d+'],
+            'facebook_access_token' => ['requirements' => '[^/]+'],
         ));
 
         $data = $paramFetcher->all();
@@ -79,19 +80,19 @@ class SecurityController extends Controller
             throw new InvalidPropertyUserException(422, 'The given facebook_id does not correspond to a valid acount');
         }
 
-        $existingByFacebookId = $userManager->findUserBy(array('facebookId' => $data['facebook_id']));
+        $user = $userManager->findUserBy(array('facebookId' => $data['facebook_id']));
 
-        if (is_object($existingByFacebookId)) {
-            return $this->renderToken($existingByFacebookId);
+        if (is_object($user)) {
+            return $this->renderToken($user);
         }
 
-        $existingByEmail = $userManager->findUserBy(array('email' => $data['email']));
+        $user = $userManager->findUserBy(array('email' => $data['email']));
 
-        if (is_object($existingByEmail)) {
-            $existingByEmail->setFacebookId($data['facebook_id']);
-            $userManager->updateUser($existingByEmail);
+        if (is_object($user)) {
+            $user->setFacebookId($data['facebook_id']);
+            $userManager->updateUser($user);
 
-            return $this->renderToken($existingByEmail);
+            return $this->renderToken($user);
         }
 
         $data['password'] = $this->generateRandomPassword();
@@ -179,10 +180,8 @@ class SecurityController extends Controller
     }
 
     /**
-     * Verifiy facebook account from id/access_token.
-     *
      * @param int    $facebookId          Facebook account id
-     * @param string $facebookAccessToken Facebook access_token
+     * @param string $facebookAccessToken Facebook access token
      *
      * @return bool Facebook account status
      */
