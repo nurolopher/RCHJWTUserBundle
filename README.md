@@ -12,6 +12,12 @@ What's inside
 - [__LexikJWTAuthenticationBundle__](https://github.com/lexik/LexikJWTAuthenticationBundle)
 - [__GesdinetRefreshTokenBundle__](https://github.com/gesdinet/JWTRefreshTokenBundle)
 
+Requirements
+------------
+
+- PHP 5.4+
+- Symfony 2.8+
+
 Installation
 ------------
 
