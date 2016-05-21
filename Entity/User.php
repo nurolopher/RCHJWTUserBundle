@@ -17,7 +17,7 @@ use FOS\UserBundle\Entity\User as BaseUser;
 /**
  * User.
  *
- * @ORM\MappedSuperClass
+ * @ORM\MappedSuperclass
  */
 class User extends BaseUser
 {

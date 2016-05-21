@@ -16,15 +16,13 @@ class AppKernel extends Kernel
     public function registerBundles()
     {
         return [
+            new \RCH\JWTUserBundle\RCHJWTUserBundle(),
             new \Symfony\Bundle\SecurityBundle\SecurityBundle(),
-            new \Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new \Symfony\Bundle\TwigBundle\TwigBundle(),
             new \Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle(),
             new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
-            new \RCH\JWTUserBundle\RCHJWTUserBundle(),
             new \FOS\UserBundle\FOSUserBundle(),
             new \Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle(),
-            new \Gesdinet\JWTRefreshTokenBundle\GesdinetJWTRefreshTokenBundle(),
         ];
     }
 
@@ -50,6 +48,12 @@ class AppKernel extends Kernel
     public function getVarDir()
     {
         return sys_get_temp_dir().'/RCHJWTUserBundle/';
+    }
+
+
+    public function getRootDir()
+    {
+        return dirname(__DIR__);
     }
 
     /**

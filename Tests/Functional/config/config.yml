@@ -1,11 +1,16 @@
 framework:
     secret: test
+    validation: { enabled: true, enable_annotations: true }
     router:
         resource: %kernel.root_dir%/config/routing.yml
-    validation: { enable_annotations: true }
     templating:
         engines: ['twig']
     default_locale: en
+
+fos_user:
+    db_driver:      orm
+    firewall_name:  main
+    user_class: RCH\JWTUserBundle\Tests\Functional\Stub\User
 
 swiftmailer:
     transport: smtp
@@ -20,47 +25,20 @@ lexik_jwt_authentication:
     public_key_path:    %kernel.root_dir%/var/public.pem
     pass_phrase:        testing
 
-gesdinet_jwt_refresh_token:
-    ttl: 2592000
-    firewall: api
-
-fos_user:
-    db_driver:      orm
-    firewall_name:  main
-    user_class: RCH\JWTUserBundle\Tests\Stub\User
-
-doctrine:
-    dbal:
-        driver:   pdo_mysql
-        host:     127.0.0.1
-        port:     ~
-        dbname:   "rch_jwt_user_test"
-        user:     "root"
-        password: "root"
-        charset:  UTF8
-
-    orm:
-        auto_generate_proxy_classes: "%kernel.debug%"
-        naming_strategy: doctrine.orm.naming_strategy.underscore
-        auto_mapping: true
-
 security:
     providers:
-        fos_userbundle:
-            id: fos_user.user_provider.username_email
-    encoders:
-        FOS\UserBundle\Model\UserInterface: sha512
+        in_memory:
+            memory:
 
     firewalls:
         login:
-            pattern:  ^/v1/login
+            pattern:  ^/api/login
             stateless: true
             anonymous: true
             form_login:
-                provider: fos_userbundle
-                check_path: /v1/login
+                check_path: /api/login_check
                 require_previous_session: false
-                username_parameter: email
+                username_parameter: username
                 password_parameter: password
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure

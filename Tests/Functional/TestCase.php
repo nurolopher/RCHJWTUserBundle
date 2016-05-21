@@ -4,6 +4,7 @@ namespace RCH\JWTUserBundle\Tests\Functional;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Filesystem\Filesystem;
+use Doctrine\Common\Annotations\AnnotationRegistry;
 
 /**
  * TestCase.
