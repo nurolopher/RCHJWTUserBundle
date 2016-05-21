@@ -9,18 +9,22 @@
  * file that was distributed with this source code.
  */
 
-namespace RCH\JWTUserBundle\Tests\Functional\Stub;
+namespace RCH\JWTUserBundle\Tests\Stub;
 
 use Doctrine\ORM\Mapping as ORM;
 use RCH\JWTUserBundle\Entity\User as BaseUser;
 
 /**
+ * @ORM\Entity
  */
 class User extends BaseUser
 {
     /**
      * @var int
      *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     protected $id;
 

@@ -42,13 +42,13 @@ class RCHJWTUserExtension extends Extension implements PrependExtensionInterface
     {
         $kernelRootDir = $container->getParameter('kernel.root_dir');
 
-        $configurations = array(
-            'lexik_jwt_authentication' => array(
+        $configurations = [
+            'lexik_jwt_authentication' => [
                 'private_key_path' => $kernelRootDir.'/var/jwt/private.pem',
                 'public_key_path'  => $kernelRootDir.'/var/jwt/public.pem',
                 'pass_phrase'      => 'foobar',
-            ),
-        );
+            ],
+        ];
 
         foreach ($configurations as $extension => $config) {
             $container->prependExtensionConfig($extension, $configurations[$extension]);

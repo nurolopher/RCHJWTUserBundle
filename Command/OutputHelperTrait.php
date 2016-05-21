@@ -32,7 +32,7 @@ trait OutputHelperTrait
         $breakline = '';
         $output = $this->createBlockTitle($output);
         $title = $this->formatAsTitle('Thank\'s to use RCHJWTUserBundle');
-        $welcome = array($breakline, $title, $breakline);
+        $welcome = [$breakline, $title, $breakline];
 
         $output->writeln($welcome);
     }
@@ -46,7 +46,7 @@ trait OutputHelperTrait
      */
     protected function createBlockTitle(OutputInterface $output)
     {
-        $style = new OutputFormatterStyle('white', 'blue', array('bold'));
+        $style = new OutputFormatterStyle('white', 'blue', ['bold']);
         $output->getFormatter()->setStyle('title', $style);
 
         return $output;

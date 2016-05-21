@@ -27,7 +27,7 @@ class UserException extends \RuntimeException
       * @param string|null     $message
       * @param \Exception|null $previous
       */
-     public function __construct($statusCode, $message = null, \Exception $previous = null, array $headers = array(), $code = 0)
+     public function __construct($statusCode, $message = null, \Exception $previous = null, array $headers = [], $code = 0)
      {
          $this->statusCode = $statusCode;
          $this->headers = $headers;

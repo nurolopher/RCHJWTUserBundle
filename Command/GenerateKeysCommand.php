@@ -144,21 +144,21 @@ class GenerateKeysCommand extends ContainerAwareCommand
      */
     protected function writeParameters($rootDir, $keysPath, $passphrase, OutputInterface $output)
     {
-        $config = array(
-            'lexik_jwt_authentication' => array(
+        $config = [
+            'lexik_jwt_authentication' => [
                 'private_key_path' => '%jwt_private_key_path%',
                 'public_key_path'  => '%jwt_public_key_path%',
                 'pass_phrase'      => '%jwt_key_pass_phrase%',
-            ),
-        );
+            ],
+        ];
 
-        $parameters = array(
-            'lexik_jwt_authentication' => array(
+        $parameters = [
+            'lexik_jwt_authentication' => [
                 'jwt_private_key_path' => $keysPath.'/private.pem',
                 'jwt_public_key_path'  => $keysPath.'/public.pem',
                 'jwt_key_pass_phrase'  => $passphrase,
-            ),
-        );
+            ],
+        ];
 
         $dumper = new Dumper();
         $yamlParameters = $dumper->dump($parameters);

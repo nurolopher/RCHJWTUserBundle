@@ -8,7 +8,6 @@
  * For more informations about license, please see the LICENSE
  * file distributed in this source code.
  */
-
 namespace RCH\JWTUserBundle\Service;
 
 use RCH\JWTUserBundle\Exception\BadRequestUserException;
@@ -67,7 +66,7 @@ class CredentialFetcher
      */
     public function all()
     {
-        $params = array();
+        $params = [];
 
         foreach ($this->methodRequirements as $key => $config) {
             $params[$key] = $this->get($key);
@@ -135,10 +134,10 @@ class CredentialFetcher
 
         foreach ($requirements as $constraint) {
             if (is_scalar($constraint)) {
-                $constraint = new Regex(array(
+                $constraint = new Regex([
                     'pattern' => '#^'.$constraint.'$#xsu',
                     'message' => sprintf('Does not match "%s"', $constraint),
-                ));
+                ]);
             } elseif (is_array($constraint)) {
                 continue;
             }

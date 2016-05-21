@@ -7,6 +7,7 @@ use RCH\JWTUserBundle\Tests\Functional\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
+ * Tests the GenerateKeysCommand execution.
  */
 class GenerateKeysCommandTest extends TestCase
 {

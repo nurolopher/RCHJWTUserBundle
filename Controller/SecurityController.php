@@ -37,7 +37,7 @@ class SecurityController extends Controller
     {
         $paramFetcher = $this->get('rch_jwt_user.credential_fetcher')->create([
             'email' => [
-                'requirements' => array(new Email(), new UniqueEntity('email')),
+                'requirements' => [new Email(), new UniqueEntity('email')],
                 'class'        => new User(),
             ],
             'password' => ['requirements' => '[^/]+'],
@@ -68,11 +68,11 @@ class SecurityController extends Controller
         $paramFetcher = $this->get('rch_jwt_user.credential_fetcher');
         $userManager = $this->container->get('fos_user.user_manager');
 
-        $paramFetcher->create(array(
+        $paramFetcher->create([
             'email'                 => ['requirements' => new Email()],
             'facebook_id'           => ['requirements' => '\d+'],
             'facebook_access_token' => ['requirements' => '[^/]+'],
-        ));
+        ]);
 
         $data = $paramFetcher->all();
 
@@ -80,13 +80,13 @@ class SecurityController extends Controller
             throw new InvalidPropertyUserException(422, 'The given facebook_id does not correspond to a valid acount');
         }
 
-        $user = $userManager->findUserBy(array('facebookId' => $data['facebook_id']));
+        $user = $userManager->findUserBy(['facebookId' => $data['facebook_id']]);
 
         if (is_object($user)) {
             return $this->renderToken($user);
         }
 
-        $user = $userManager->findUserBy(array('email' => $data['email']));
+        $user = $userManager->findUserBy(['email' => $data['email']]);
 
         if (is_object($user)) {
             $user->setFacebookId($data['facebook_id']);
@@ -143,11 +143,11 @@ class SecurityController extends Controller
      */
     protected function renderToken(UserInterface $user, $statusCode = 200)
     {
-        $body = array(
+        $body = [
             'token'         => $this->container->get('lexik_jwt_authentication.jwt_manager')->create($user),
             'refresh_token' => $this->attachRefreshToken($user),
             'user'          => $user->getUsername(),
-        );
+        ];
 
         return new JsonResponse($body, $statusCode);
     }

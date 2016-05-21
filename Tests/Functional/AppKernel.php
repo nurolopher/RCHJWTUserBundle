@@ -50,7 +50,6 @@ class AppKernel extends Kernel
         return sys_get_temp_dir().'/RCHJWTUserBundle/';
     }
 
-
     public function getRootDir()
     {
         return dirname(__DIR__);

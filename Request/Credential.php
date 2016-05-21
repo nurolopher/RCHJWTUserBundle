@@ -8,7 +8,6 @@
  * For more informations about license, please see the LICENSE
  * file distributed in this source code.
  */
-
 namespace RCH\JWTUserBundle\Request;
 
 /**
@@ -25,7 +24,7 @@ class Credential
     protected $options;
 
     /** @var array */
-    public $requirements = array();
+    public $requirements = [];
 
     /** @var mixed */
     public $default = null;
@@ -79,7 +78,7 @@ class Credential
         $requirements = $this->options['requirements'];
 
         if (!is_array($requirements)) {
-            $requirements = array($requirements);
+            $requirements = [$requirements];
         }
 
         foreach ($requirements as $constraint) {
