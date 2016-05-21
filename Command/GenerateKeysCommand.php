@@ -1,37 +1,33 @@
 <?php
 
-/**
+/*
  * This file is part of the RCH package.
  *
- * Robin Chalas <robin.chalas@gmail.com>
+ * (c) Robin Chalas <https://github.com/chalasr>
  *
- * For more informations about license, please see the LICENSE
- * file distributed in this source code.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+
 namespace RCH\JWTUserBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Dumper;
 
 /**
- * Generates RSA Keys for LexikJWT.
+ * Generates SSL Keys for LexikJWT.
  *
  * @author Robin Chalas <robin.chalas@gmail.com>
  */
 class GenerateKeysCommand extends ContainerAwareCommand
 {
-    use OutputHelperTrait;
-
-    protected $configTemplate = '
-
-';
-
     /**
      * {@inheritdoc}
      */
@@ -39,7 +35,9 @@ class GenerateKeysCommand extends ContainerAwareCommand
     {
         $this
           ->setName('rch:jwt:generate-keys')
-          ->setDescription('Generate RSA keys used by LexikJWTAuthenticationBundle');
+          ->setDescription('Generate SSL keys to be consumed by LexikJWTAuthenticationBundle')
+          ->addOption('passphrase', 'pp', InputOption::VALUE_REQUIRED, 'Passphrase used to encrypt/decrypt the generated keys', '')
+          ->addOption('path', null, InputOption::VALUE_REQUIRED, 'The path where in the keys will be generated.');
     }
 
     /**
@@ -47,25 +45,27 @@ class GenerateKeysCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->sayWelcome($output);
-        $kernelRootDir = $this->getContainer()->getParameter('kernel.root_dir');
-        $question = new Question('Choose the passphrase of your private RSA key : ');
-
-        $questionHelper = $this->getHelper('question');
-        $passphrase = $questionHelper->ask($input, $output, $question);
-
-        if (!$passphrase || 'random' == $passphrase) {
-            $passphrase = random_bytes(10);
-        }
-
-        $path = $kernelRootDir.'/jwt';
-
-        /* Compatibility Symfony3 directory structure */
-        if (is_writable($kernelRootDir.'/../var')) {
-            $path = $kernelRootDir.'/../var/jwt';
-        }
-
+        $io = new SymfonyStyle($input, $output);
         $fs = new FileSystem();
+
+        $io->title('RCHJWTUserBundle - Generate SSL Keys');
+
+        $rootDir = $this->getContainer()->getParameter('kernel.root_dir');
+        $passphrase = $input->getOption('passphrase');
+
+        if (!$path = $input->getOption('path')) {
+            $path = $rootDir.'/jwt';
+
+            /* Symfony3 directory structure */
+            if (is_writable($rootDir.'/../var')) {
+                $path = $rootDir.'/../var/jwt';
+            }
+        }
+
+        if (!$passphrase) {
+            $passphrase = 'test';
+        }
+        // var_dump($path);die;
 
         if (!$fs->exists($path)) {
             $fs->mkdir($path);
@@ -144,21 +144,21 @@ class GenerateKeysCommand extends ContainerAwareCommand
      */
     protected function writeParameters($rootDir, $keysPath, $passphrase, OutputInterface $output)
     {
-        $config = array(
-            'lexik_jwt_authentication' => array(
+        $config = [
+            'lexik_jwt_authentication' => [
                 'private_key_path' => '%jwt_private_key_path%',
                 'public_key_path'  => '%jwt_public_key_path%',
                 'pass_phrase'      => '%jwt_key_pass_phrase%',
-            ),
-        );
+            ],
+        ];
 
-        $parameters = array(
-            'lexik_jwt_authentication' => array(
+        $parameters = [
+            'lexik_jwt_authentication' => [
                 'jwt_private_key_path' => $keysPath.'/private.pem',
                 'jwt_public_key_path'  => $keysPath.'/public.pem',
                 'jwt_key_pass_phrase'  => $passphrase,
-            ),
-        );
+            ],
+        ];
 
         $dumper = new Dumper();
         $yamlParameters = $dumper->dump($parameters);

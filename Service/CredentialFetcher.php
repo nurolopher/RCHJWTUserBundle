@@ -11,7 +11,7 @@
 namespace RCH\JWTUserBundle\Service;
 
 use RCH\JWTUserBundle\Exception\BadRequestUserException;
-use RCH\JWTUserBundle\Request\Param;
+use RCH\JWTUserBundle\Request\Credential;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -66,7 +66,7 @@ class CredentialFetcher
      */
     public function all()
     {
-        $params = array();
+        $params = [];
 
         foreach ($this->methodRequirements as $key => $config) {
             $params[$key] = $this->get($key);
@@ -88,7 +88,7 @@ class CredentialFetcher
             return;
         }
 
-        $config = new Param($name, $paramConfig);
+        $config = new Credential($name, $paramConfig);
 
         if (true === $config->required && !($this->getRequest()->request->has($name))) {
             throw new BadRequestUserException(
@@ -134,10 +134,10 @@ class CredentialFetcher
 
         foreach ($requirements as $constraint) {
             if (is_scalar($constraint)) {
-                $constraint = new Regex(array(
+                $constraint = new Regex([
                     'pattern' => '#^'.$constraint.'$#xsu',
                     'message' => sprintf('Does not match "%s"', $constraint),
-                ));
+                ]);
             } elseif (is_array($constraint)) {
                 continue;
             }

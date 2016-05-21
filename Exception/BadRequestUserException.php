@@ -1,9 +1,9 @@
 <?php
 
 /*
- * This file is part of the Symfony package.
+ * This file is part of the RCH package.
  *
- * (c) Fabien Potencier <fabien@symfony.com>
+ * (c) Robin Chalas <https://github.com/chalasr>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -27,6 +27,6 @@ class BadRequestUserException extends UserException
      */
     public function __construct($message = null, \Exception $previous = null, $code = 0)
     {
-        parent::__construct(400, $message, $previous, array(), $code);
+        parent::__construct(400, $message, $previous, [], $code);
     }
 }

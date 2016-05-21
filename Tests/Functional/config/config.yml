@@ -1,0 +1,69 @@
+framework:
+    secret: test
+    validation: { enabled: true, enable_annotations: true }
+    router:
+        resource: %kernel.root_dir%/config/routing.yml
+    templating:
+        engines: ['twig']
+    default_locale: en
+
+fos_user:
+    db_driver:      orm
+    firewall_name:  main
+    user_class: RCH\JWTUserBundle\Tests\Functional\Stub\User
+
+swiftmailer:
+    transport: smtp
+    host:      127.0.0.1
+    port:      "25"
+    username:  ~
+    password:  ~
+    spool:     { type: memory }
+
+lexik_jwt_authentication:
+    private_key_path:   %kernel.root_dir%/var/private.pem
+    public_key_path:    %kernel.root_dir%/var/public.pem
+    pass_phrase:        testing
+
+security:
+    providers:
+        in_memory:
+            memory:
+
+    firewalls:
+        login:
+            pattern:  ^/api/login
+            stateless: true
+            anonymous: true
+            form_login:
+                check_path: /api/login_check
+                require_previous_session: false
+                username_parameter: username
+                password_parameter: password
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+
+        api:
+            pattern:   ^/v1/
+            stateless: true
+            lexik_jwt: ~
+
+        signup:
+            pattern: ^/v1/register
+            anonymous: true
+            stateless: true
+
+        oauth:
+            pattern: ^/v1/oauth/login
+            anonymous: true
+            stateless: true
+
+        refresh:
+            pattern:  ^/v1/refresh_token
+            stateless: true
+            anonymous: true
+
+        guest:
+            pattern:  ^/v1/guest/login
+            stateless: true
+            anonymous: true

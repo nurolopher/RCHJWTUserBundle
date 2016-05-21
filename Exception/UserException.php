@@ -1,18 +1,18 @@
 <?php
 
-/**
+/*
  * This file is part of the RCH package.
  *
- * Robin Chalas <robin.chalas@gmail.com>
+ * (c) Robin Chalas <https://github.com/chalasr>
  *
- * For more informations about license, please see the LICENSE
- * file distributed in this source code.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+
 namespace RCH\JWTUserBundle\Exception;
 
 /**
- * AlreadyExistingUserException is thrown when a user is persisted with
- * an identifier that already exists in database.
+ * Base class for User exceptions.
  *
  * @author Robin Chalas <robin.chalas@gmail.com>
  */
@@ -27,7 +27,7 @@ class UserException extends \RuntimeException
       * @param string|null     $message
       * @param \Exception|null $previous
       */
-     public function __construct($statusCode, $message = null, \Exception $previous = null, array $headers = array(), $code = 0)
+     public function __construct($statusCode, $message = null, \Exception $previous = null, array $headers = [], $code = 0)
      {
          $this->statusCode = $statusCode;
          $this->headers = $headers;

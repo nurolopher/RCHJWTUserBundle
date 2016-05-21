@@ -36,13 +36,12 @@ class Configuration implements ConfigurationInterface
                             ->defaultValue(true)
                         ->end()
                         ->enumNode('format')
-                            ->values(array('json', 'xml'))
+                            ->values(['json', 'xml'])
                             ->defaultValue('json')
                         ->end()
                     ->end()
                 ->end()
-            ->end()
-        ;
+            ->end();
 
         return $treeBuilder;
     }

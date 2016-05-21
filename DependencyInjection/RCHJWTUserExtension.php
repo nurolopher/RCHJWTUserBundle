@@ -1,13 +1,14 @@
 <?php
 
-/**
+/*
  * This file is part of the RCH package.
  *
- * Robin Chalas <robin.chalas@gmail.com>
+ * (c) Robin Chalas <https://github.com/chalasr>
  *
- * For more informations about license, please see the LICENSE
- * file distributed in this source code.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+
 namespace RCH\JWTUserBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
@@ -41,13 +42,13 @@ class RCHJWTUserExtension extends Extension implements PrependExtensionInterface
     {
         $kernelRootDir = $container->getParameter('kernel.root_dir');
 
-        $configurations = array(
-            'lexik_jwt_authentication' => array(
+        $configurations = [
+            'lexik_jwt_authentication' => [
                 'private_key_path' => $kernelRootDir.'/var/jwt/private.pem',
                 'public_key_path'  => $kernelRootDir.'/var/jwt/public.pem',
                 'pass_phrase'      => 'foobar',
-            ),
-        );
+            ],
+        ];
 
         foreach ($configurations as $extension => $config) {
             $container->prependExtensionConfig($extension, $configurations[$extension]);

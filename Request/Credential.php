@@ -15,7 +15,7 @@ namespace RCH\JWTUserBundle\Request;
  *
  * @author Robin Chalas <robin.chalas@gmail.com>
  */
-class Param
+class Credential
 {
     /** @var string */
     public $name;
@@ -24,7 +24,7 @@ class Param
     protected $options;
 
     /** @var array */
-    public $requirements = array();
+    public $requirements = [];
 
     /** @var mixed */
     public $default = null;
@@ -78,7 +78,7 @@ class Param
         $requirements = $this->options['requirements'];
 
         if (!is_array($requirements)) {
-            $requirements = array($requirements);
+            $requirements = [$requirements];
         }
 
         foreach ($requirements as $constraint) {

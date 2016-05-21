@@ -1,5 +1,6 @@
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/2fee6932-fec3-4556-b8d9-cbad0f8aceef/mini.png)](https://insight.sensiolabs.com/projects/2fee6932-fec3-4556-b8d9-cbad0f8aceef)
-
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/021204ec-db7b-44d1-8d84-9bd9cd3a9ded/mini.png)](https://insight.sensiolabs.com/projects/021204ec-db7b-44d1-8d84-9bd9cd3a9ded)
+[![StyleCI](https://styleci.io/repos/49818109/shield)](https://styleci.io/repos/49818109)
+[![Build Status](https://travis-ci.org/chalasr/RCHJWTUserBundle.svg?branch=master)](https://travis-ci.org/chalasr/RCHJWTUserBundle)
 RCH/JWTUserBundle
 =================
 
@@ -74,6 +75,10 @@ Generate the RSA keys used by LexikJWTAuthenticationBundle :
 ```bash
 $ php app/console rch:jwt:generate-keys
 ```
+
+// TODO:
+Config reference 
+- option "rch_jwt_user.username_parameter" (Replace the fosuser configuration (provider username_email) + lexik config through compiler pass)
 
 
 Contributing

@@ -12,6 +12,7 @@ return Symfony\CS\Config\Config::create()
         'align_double_arrow',
         'newline_after_open_tag',
         'ordered_use',
+        'short_array_syntax',
     ))
     ->setUsingCache(false)
     ->finder($finder)

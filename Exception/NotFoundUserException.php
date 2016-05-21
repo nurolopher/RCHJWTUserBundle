@@ -1,13 +1,14 @@
 <?php
 
-/**
+/*
  * This file is part of the RCH package.
  *
- * Robin Chalas <robin.chalas@gmail.com>
+ * (c) Robin Chalas <https://github.com/chalasr>
  *
- * For more informations about license, please see the LICENSE
- * file distributed in this source code.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+
 namespace RCH\JWTUserBundle\Exception;
 
 /**
@@ -26,6 +27,6 @@ class NotFoundUserException extends UserException
      */
     public function __construct($message = 'The given user cannot be found.', \Exception $previous = null, $code = 0)
     {
-        parent::__construct(404, $message, $previous, array(), $code);
+        parent::__construct(404, $message, $previous, [], $code);
     }
 }
