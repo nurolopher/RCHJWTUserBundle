@@ -76,11 +76,6 @@ Generate the RSA keys used by LexikJWTAuthenticationBundle :
 $ php app/console rch:jwt:generate-keys
 ```
 
-// TODO:
-Config reference 
-- option "rch_jwt_user.username_parameter" (Replace the fosuser configuration (provider username_email) + lexik config through compiler pass)
-
-
 Contributing
 ------------
 

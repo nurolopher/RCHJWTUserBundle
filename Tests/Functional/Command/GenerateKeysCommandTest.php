@@ -65,4 +65,23 @@ class GenerateKeysCommandTest extends TestCase
         $this->assertEquals(0, $result);
         $this->assertContains(sprintf('RSA keys successfully generated with passphrase %s', $passphrase), $tester->getDisplay());
     }
+
+    /**
+     * Test command.
+     */
+    public function testGenerateKeysCommandWithEmptyPassphrase()
+    {
+        $command = new GenerateKeysCommand();
+        $command->setContainer(static::$kernel->getContainer());
+
+        $tester = new CommandTester($command);
+        $result = $tester->execute([
+            '--path' => self::$path,
+        ]);
+
+        $this->assertFileExists(self::$path.'/public.pem');
+        $this->assertFileExists(self::$path.'/private.pem');
+        $this->assertEquals(0, $result);
+        $this->assertContains('RSA keys successfully generated', $tester->getDisplay());
+    }
 }

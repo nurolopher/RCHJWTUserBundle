@@ -19,7 +19,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
-use Symfony\Component\Yaml\Dumper;
 
 /**
  * Generates SSL Keys for LexikJWT.
@@ -28,6 +27,8 @@ use Symfony\Component\Yaml\Dumper;
  */
 class GenerateKeysCommand extends ContainerAwareCommand
 {
+    private $io;
+
     /**
      * {@inheritdoc}
      */
@@ -45,10 +46,10 @@ class GenerateKeysCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $io = new SymfonyStyle($input, $output);
+        $this->io = new SymfonyStyle($input, $output);
         $fs = new FileSystem();
 
-        $io->title('RCHJWTUserBundle - Generate SSL Keys');
+        $this->io->title('RCHJWTUserBundle - Generate SSL Keys');
 
         $rootDir = $this->getContainer()->getParameter('kernel.root_dir');
         $passphrase = $input->getOption('passphrase');
@@ -62,19 +63,22 @@ class GenerateKeysCommand extends ContainerAwareCommand
             }
         }
 
-        if (!$passphrase) {
-            $passphrase = 'test';
-        }
-        // var_dump($path);die;
-
         if (!$fs->exists($path)) {
             $fs->mkdir($path);
         }
 
-        $this->generatePrivateKey($path, $passphrase, $output);
-        $this->generatePublicKey($path, $passphrase, $output);
+        $this->generatePrivateKey($path, $passphrase, $this->io);
+        $this->generatePublicKey($path, $passphrase, $this->io);
 
-        $output->writeln(sprintf('<info>RSA keys successfully generated with passphrase <comment>%s</comment></info>', $passphrase));
+        $outputMessage = 'RSA keys successfully generated';
+
+        if ($passphrase) {
+            $outputMessage .= $this->io->getFormatter()->format(
+                sprintf(' with passphrase <comment>%s</comment></info>', $passphrase)
+            );
+        }
+
+        $this->io->success($outputMessage);
     }
 
     /**
@@ -86,11 +90,15 @@ class GenerateKeysCommand extends ContainerAwareCommand
      *
      * @throws ProcessFailedException
      */
-    protected function generatePrivateKey($path, $passphrase, OutputInterface $output)
+    protected function generatePrivateKey($path, $passphrase)
     {
-        $processArgs = sprintf('genrsa -out %s/private.pem  -aes256 -passout pass:%s 4096', $path, $passphrase);
+        if ($passphrase) {
+            $processArgs = sprintf('genrsa -out %s/private.pem -aes256 -passout pass:%s 4096', $path, $passphrase);
+        } else {
+            $processArgs = sprintf('genrsa -out %s/private.pem 4096', $path);
+        }
 
-        $this->generateKey($processArgs, $output);
+        $this->generateKey($processArgs);
     }
 
     /**
@@ -100,11 +108,11 @@ class GenerateKeysCommand extends ContainerAwareCommand
      * @param string          $passphrase
      * @param OutputInterface $output
      */
-    protected function generatePublicKey($path, $passphrase, OutputInterface $output)
+    protected function generatePublicKey($path, $passphrase)
     {
         $processArgs = sprintf('rsa -pubout -in %s/private.pem -out %s/public.pem -passin pass:%s', $path, $path, $passphrase);
 
-        $this->generateKey($processArgs, $output);
+        $this->generateKey($processArgs);
     }
 
     /**
@@ -115,15 +123,13 @@ class GenerateKeysCommand extends ContainerAwareCommand
      *
      * @throws ProcessFailedException
      */
-    protected function generateKey($processArgs, OutputInterface $output)
+    protected function generateKey($processArgs)
     {
         $process = new Process(sprintf('openssl %s', $processArgs));
         $process->setTimeout(3600);
 
-        $process->run(function ($type, $buffer) use ($output) {
-            if (OutputInterface::VERBOSITY_VERBOSE <= $output->getVerbosity()) {
-                $output->write($buffer);
-            }
+        $process->run(function ($type, $buffer) {
+            $this->io->write($buffer);
         });
 
         if (!$process->isSuccessful()) {
@@ -131,42 +137,5 @@ class GenerateKeysCommand extends ContainerAwareCommand
         }
 
         $process->getExitCode();
-    }
-
-    /**
-     * Write in parameters.yml (work in progress).
-     *
-     * @param string $rootDir
-     * @param string $keysPath
-     * @param string $passphrass
-     *
-     * @return array $config
-     */
-    protected function writeParameters($rootDir, $keysPath, $passphrase, OutputInterface $output)
-    {
-        $config = [
-            'lexik_jwt_authentication' => [
-                'private_key_path' => '%jwt_private_key_path%',
-                'public_key_path'  => '%jwt_public_key_path%',
-                'pass_phrase'      => '%jwt_key_pass_phrase%',
-            ],
-        ];
-
-        $parameters = [
-            'lexik_jwt_authentication' => [
-                'jwt_private_key_path' => $keysPath.'/private.pem',
-                'jwt_public_key_path'  => $keysPath.'/public.pem',
-                'jwt_key_pass_phrase'  => $passphrase,
-            ],
-        ];
-
-        $dumper = new Dumper();
-        $yamlParameters = $dumper->dump($parameters);
-        $parametersPath = $rootDir.'/config/parameters.yml';
-
-        $output->writeln($dumper->dump($config));
-        file_put_contents($parametersPath.'.dist', $yamlParameters);
-
-        return $config;
     }
 }
