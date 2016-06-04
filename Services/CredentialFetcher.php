@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace RCH\JWTUserBundle\Service;
+namespace RCH\JWTUserBundle\Services;
 
 use RCH\JWTUserBundle\Exception\BadRequestUserException;
 use RCH\JWTUserBundle\Request\Credential;
@@ -125,7 +125,7 @@ class CredentialFetcher
      *
      * @return Param
      */
-    private function validateParam(Param $config, $param)
+    private function validateParam(Credential $config, $param)
     {
         $name = $config->name;
 
