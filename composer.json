@@ -21,7 +21,7 @@
         "doctrine/orm": "^2.5"
     },
     "require-dev": {
-        "fabpot/php-cs-fixer": "^1.11",
+        "friendsofphp/php-cs-fixer": "^1.11",
         "symfony/swiftmailer-bundle": "~2.3"
     },
     "autoload": {
