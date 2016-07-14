@@ -27,6 +27,7 @@ class AppKernel extends Kernel
         return [
             new \RCH\JWTUserBundle\RCHJWTUserBundle(),
             new \Symfony\Bundle\SecurityBundle\SecurityBundle(),
+            new \Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new \Symfony\Bundle\TwigBundle\TwigBundle(),
             new \Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle(),
             new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
@@ -40,7 +41,7 @@ class AppKernel extends Kernel
      */
     public function getCacheDir()
     {
-        return $this->getVarDir().'cache/';
+        return $this->getVarDir().'/cache';
     }
 
     /**
@@ -48,7 +49,7 @@ class AppKernel extends Kernel
      */
     public function getLogDir()
     {
-        return $this->getVarDir().'logs/';
+        return $this->getVarDir().'/logs';
     }
 
     /**
@@ -56,12 +57,12 @@ class AppKernel extends Kernel
      */
     public function getVarDir()
     {
-        return sys_get_temp_dir().'/RCHJWTUserBundle/';
+        return dirname($this->getRootDir().'/var');
     }
 
     public function getRootDir()
     {
-        return dirname(__DIR__);
+        return dirname(sys_get_temp_dir().'/RCHJWTUserBundle/app');
     }
 
     /**

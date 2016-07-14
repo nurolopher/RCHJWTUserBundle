@@ -7,10 +7,24 @@ framework:
         engines: ['twig']
     default_locale: en
 
-fos_user:
-    db_driver:      orm
-    firewall_name:  main
-    user_class: RCH\JWTUserBundle\Tests\Functional\Stub\User
+rch_jwt_user:
+    user_class: RCH\JWTUserBundle\Entity\User
+    user_identity_field: email
+    passphrase: foobar
+
+doctrine:
+    dbal:
+        driver:   pdo_mysql
+        host:     127.0.0.1
+        port:     null
+        dbname:   test
+        user:     root
+        password: null
+
+    orm:
+        auto_generate_proxy_classes: "%kernel.debug%"
+        naming_strategy: doctrine.orm.naming_strategy.underscore
+        auto_mapping: true
 
 swiftmailer:
     transport: smtp
@@ -27,43 +41,51 @@ lexik_jwt_authentication:
 
 security:
     providers:
-        in_memory:
-            memory:
+        fos_userbundle:
+            id: fos_user.user_provider.username_email
+
+    encoders:
+        FOS\UserBundle\Model\UserInterface: bcrypt
+
+    role_hierarchy:
+        ROLE_ADMIN:       ROLE_USER
+        ROLE_SUPER_ADMIN: ROLE_ADMIN
 
     firewalls:
+        dev:
+            pattern:  ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        # Signin
         login:
-            pattern:  ^/api/login
+            pattern:  ^/login
             stateless: true
             anonymous: true
             form_login:
-                check_path: /api/login_check
+                provider: fos_userbundle
+                check_path: /login
                 require_previous_session: false
-                username_parameter: username
+                username_parameter: email
                 password_parameter: password
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
-
+        # Signup
+        register:
+            pattern: ^/register
+            anonymous: true
+            stateless: true
+        # Refresh token
+        refresh:
+            pattern:  ^/refresh_token
+            stateless: true
+            anonymous: true
+        # REST API
         api:
-            pattern:   ^/v1/
+            pattern:   ^/
             stateless: true
             lexik_jwt: ~
 
-        signup:
-            pattern: ^/v1/register
-            anonymous: true
-            stateless: true
-
-        oauth:
-            pattern: ^/v1/oauth/login
-            anonymous: true
-            stateless: true
-
-        refresh:
-            pattern:  ^/v1/refresh_token
-            stateless: true
-            anonymous: true
-
-        guest:
-            pattern:  ^/v1/guest/login
-            stateless: true
-            anonymous: true
+    access_control:
+        - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/login, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/refresh_token, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/, role: IS_AUTHENTICATED_FULLY }

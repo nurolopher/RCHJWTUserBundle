@@ -15,11 +15,10 @@ use FOS\UserBundle\Model\UserInterface;
 use Gesdinet\JWTRefreshTokenBundle\Entity\RefreshToken;
 use RCH\JWTUserBundle\Exception\InvalidPropertyUserException;
 use RCH\JWTUserBundle\Exception\UserException;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Validator\Constraints\Email;
-use UserBundle\Entity\User;
 
 /**
  * JWT Security Controller.
@@ -31,19 +30,28 @@ class SecurityController extends Controller
     /**
      * Register a new User and authenticate it.
      *
+     * Required request parameters: %user_identity_field% (configured), password
+     *
      * @return object The authentication token
      */
     public function registerAction()
     {
-        $paramFetcher = $this->get('rch_jwt_user.credential_fetcher')->create([
-            'email' => [
-                'requirements' => [new Email(), new UniqueEntity('email')],
-                'class'        => new User(),
+        $userIdentityField = $this->container->getParameter('rch_jwt_user.user_identity_field');
+        $userManager = $this->container->get('fos_user.user_manager');
+        $userClass = $userManager->getClass();
+
+        $rules = [
+            $userIdentityField => [
+                'requirements' => ['email' == $userIdentityField ? new Email() : '[^/]+'],
             ],
             'password' => ['requirements' => '[^/]+'],
-        ]);
+        ];
 
-        $user = $this->createUser($paramFetcher->all());
+        $params = $this->get('rch_jwt_user.credential_fetcher')
+            ->create($rules)
+            ->all();
+
+        $user = $this->createUser($params, $userManager);
 
         return $this->renderToken($user, 201);
     }
@@ -65,30 +73,30 @@ class SecurityController extends Controller
      */
     public function loginFromOAuthResponseAction()
     {
-        $paramFetcher = $this->get('rch_jwt_user.credential_fetcher');
         $userManager = $this->container->get('fos_user.user_manager');
+        $userIdentityField = $this->container->get('rch_jwt_user.user_identity_field');
 
-        $paramFetcher->create([
-            'email'                 => ['requirements' => new Email()],
-            'facebook_id'           => ['requirements' => '\d+'],
-            'facebook_access_token' => ['requirements' => '[^/]+'],
-        ]);
-
-        $data = $paramFetcher->all();
+        $data = $this->get('rch_jwt_user.credential_fetcher')
+            ->create([
+                $userIdentityField      => ['requirements' => $userIdentityField == 'email' ? new Email() : '[^/+]'],
+                'facebook_id'           => ['requirements' => '\d+'],
+                'facebook_access_token' => ['requirements' => '[^/]+'],
+            ])
+            ->all();
 
         if (true !== $this->isValidFacebookAccount($data['facebook_id'], $data['facebook_access_token'])) {
-            throw new InvalidPropertyUserException(422, 'The given facebook_id does not correspond to a valid acount');
+            throw new InvalidPropertyUserException('The given facebook_id does not correspond to a valid acount');
         }
 
         $user = $userManager->findUserBy(['facebookId' => $data['facebook_id']]);
 
-        if (is_object($user)) {
+        if ($user) {
             return $this->renderToken($user);
         }
 
-        $user = $userManager->findUserBy(['email' => $data['email']]);
+        $user = $userManager->findUserBy([$userIdentityField => $data[$userIdentityField]]);
 
-        if (is_object($user)) {
+        if ($user) {
             $user->setFacebookId($data['facebook_id']);
             $userManager->updateUser($user);
 
@@ -108,13 +116,13 @@ class SecurityController extends Controller
      *
      * @return UserInterface $user
      */
-    protected function createUser(array $data)
+    protected function createUser(array $data, UserProviderInterface $userManager)
     {
-        $userManager = $this->container->get('fos_user.user_manager');
+        $userIdentityfield = $this->container->getParameter('rch_jwt_user.user_identity_field');
 
         $user = $userManager->createUser()
-            ->setUsername($data['email'])
-            ->setEmail($data['email'])
+            ->setUsername($data[$userIdentityfield])
+            ->setEmail($data[$userIdentityfield])
             ->setEnabled(true)
             ->setPlainPassword($data['password']);
 

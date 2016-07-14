@@ -6,7 +6,7 @@ security_register:
 
 security_login:
     path:    /login
-    defaults: { _controller: RCHJWTUserBundle:Security:loginFromOAuthResponse }
+    defaults: { _controller: RCHJWTUserBundle:Security:login }
     requirements:
         methods: POST
 
