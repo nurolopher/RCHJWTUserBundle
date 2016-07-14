@@ -20,7 +20,7 @@ Requirements
 - PHP 5.4+
 - Symfony 2.8+
 
-__Note__ This branch requires `friendsofsymfony/user-bundle` in versions `~1.3`. For FOSUser `~2.0`, use the master branch.
+__Note__ This branch requires `friendsofsymfony/user-bundle` in versions `~2.0`. For FOSUser `~1.3`, please use the [`1.x` branch](https://github.com/chalasr/RCHJWTUserBundle/tree/1.x) of this bundle.
 
 Installation
 ------------
@@ -31,7 +31,7 @@ Open a command console, enter your project directory and execute the
 following command to download the latest stable version of this bundle:
 
 ```bash
-$ composer require rch/jwt-user-bundle dev-master
+$ composer require rch/jwt-user-bundle:2.0.x-dev
 ```
 
 This command requires you to have Composer installed globally, as explained
