@@ -21,13 +21,6 @@ use FOS\UserBundle\Entity\User as BaseUser;
  */
 class User extends BaseUser
 {
-    use TimestampableTrait;
-
-    /**
-     * @var string
-     */
-    protected $email;
-
     /**
      * Returns a string representation.
      *

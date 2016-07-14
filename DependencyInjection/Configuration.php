@@ -30,16 +30,27 @@ class Configuration implements ConfigurationInterface
         $rootNode = $treeBuilder->root('rch_jwt_user');
         $rootNode
             ->children()
-                ->arrayNode('exceptions')
-                    ->children()
-                        ->booleanNode('enabled')
-                            ->defaultValue(true)
-                        ->end()
-                        ->enumNode('format')
-                            ->values(['json', 'xml'])
-                            ->defaultValue('json')
-                        ->end()
+                ->scalarNode('user_class')
+                    ->isRequired()
+                    ->cannotBeEmpty()
+                    ->validate()
+                    ->ifString()
+                        ->then(function ($class) {
+                            if (!class_exists('\\'.$class)) {
+                                throw new InvalidConfigurationException(sprintf('"rch_jwt_user.user_class" option must be a valid class, "%s" given', $class));
+                            }
+
+                            return $class;
+                        })
                     ->end()
+                ->end()
+                ->scalarNode('user_identity_field')
+                    ->cannotBeEmpty()
+                    ->defaultValue('username')
+                ->end()
+                ->scalarNode('passphrase')
+                    ->cannotBeEmpty()
+                    ->defaultValue('')
                 ->end()
             ->end();
 

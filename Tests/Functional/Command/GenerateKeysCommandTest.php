@@ -14,15 +14,17 @@ namespace RCH\JWTUserBundle\Tests\Functional\Command;
 use RCH\JWTUserBundle\Command\GenerateKeysCommand;
 use RCH\JWTUserBundle\Tests\Functional\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Tests the GenerateKeysCommand execution.
  */
 class GenerateKeysCommandTest extends TestCase
 {
-    /**
-     * @var string
-     */
+    /** @var ContainerInterface */
+    private static $container;
+
+    /** @var string */
     private static $path;
 
     /**
@@ -33,6 +35,7 @@ class GenerateKeysCommandTest extends TestCase
         parent::setUp();
         self::bootKernel();
 
+        self::$container = static::$kernel->getContainer();
         self::$path = static::$kernel->getVarDir().'jwt';
     }
 
@@ -41,8 +44,8 @@ class GenerateKeysCommandTest extends TestCase
      */
     protected function tearDown()
     {
-        unlink(self::$path.'/private.pem');
-        unlink(self::$path.'/public.pem');
+        unlink(static::$kernel->getRootDir().'/jwt/private.pem');
+        unlink(static::$kernel->getRootDir().'/jwt/public.pem');
     }
 
     /**
@@ -51,18 +54,15 @@ class GenerateKeysCommandTest extends TestCase
     public function testGenerateKeysCommand()
     {
         $command = new GenerateKeysCommand();
-        $command->setContainer(static::$kernel->getContainer());
-        $passphrase = 'test_pass';
+        $command->setContainer(self::$container);
+        $passphrase = self::$container->getParameter('rch_jwt_user.passphrase');
 
         $tester = new CommandTester($command);
-        $result = $tester->execute([
-            '--passphrase' => $passphrase,
-            '--path'       => self::$path,
-        ]);
+        $tester->execute([]);
 
-        $this->assertFileExists(self::$path.'/public.pem');
-        $this->assertFileExists(self::$path.'/private.pem');
-        $this->assertEquals(0, $result);
+        $this->assertFileExists(static::$kernel->getRootDir().'/jwt/public.pem');
+        $this->assertFileExists(static::$kernel->getRootDir().'/jwt/private.pem');
+        $this->assertEquals(0, $tester->getStatusCode());
         $this->assertContains(sprintf('RSA keys successfully generated with passphrase %s', $passphrase), $tester->getDisplay());
     }
 
@@ -71,17 +71,34 @@ class GenerateKeysCommandTest extends TestCase
      */
     public function testGenerateKeysCommandWithEmptyPassphrase()
     {
+        $container = $this->getContainerMock();
+        $container
+            ->expects($this->at(1))
+            ->method('getParameter')
+            ->with('rch_jwt_user.passphrase')
+            ->willReturn('');
+        $container
+            ->expects($this->at(0))
+            ->method('getParameter')
+            ->with('kernel.root_dir')
+            ->willReturn(static::$kernel->getRootDir());
+
         $command = new GenerateKeysCommand();
-        $command->setContainer(static::$kernel->getContainer());
+        $command->setContainer($container);
 
         $tester = new CommandTester($command);
-        $result = $tester->execute([
-            '--path' => self::$path,
-        ]);
+        $tester->execute([]);
 
-        $this->assertFileExists(self::$path.'/public.pem');
-        $this->assertFileExists(self::$path.'/private.pem');
-        $this->assertEquals(0, $result);
+        $this->assertFileExists(static::$kernel->getRootDir().'/jwt/public.pem');
+        $this->assertFileExists(static::$kernel->getRootDir().'/jwt/private.pem');
+        $this->assertEquals(0, $tester->getStatusCode());
         $this->assertContains('RSA keys successfully generated', $tester->getDisplay());
+    }
+
+    private function getContainerMock()
+    {
+        return $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 }

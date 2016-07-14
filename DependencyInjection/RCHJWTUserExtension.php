@@ -29,8 +29,6 @@ class RCHJWTUserExtension extends Extension implements PrependExtensionInterface
      */
     public function load(array $configs, ContainerBuilder $container)
     {
-        $this->processConfiguration(new Configuration(), $configs);
-
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
     }
@@ -41,21 +39,35 @@ class RCHJWTUserExtension extends Extension implements PrependExtensionInterface
     public function prepend(ContainerBuilder $container)
     {
         $kernelRootDir = $container->getParameter('kernel.root_dir');
+        $configs = $this->processConfiguration(new Configuration(), $container->getExtensionConfig($this->getAlias()));
+        $fosUserProviderId = 'fos_user.user_provider.username_email';
+
+        $container->setParameter('rch_jwt_user.passphrase', $configs['passphrase']);
+        $container->setParameter('rch_jwt_user.user_class', $configs['user_class']);
+        $container->setParameter('rch_jwt_user.user_identity_field', $configs['user_identity_field']);
+        $container->setParameter('rch_jwt_user.user_provider', $fosUserProviderId);
 
         $configurations = [
+            'fos_user' => [
+                'user_class'    => $configs['user_class'],
+                'firewall_name' => 'main',
+                'db_driver'     => 'orm',
+            ],
             'lexik_jwt_authentication' => [
-                'private_key_path' => $kernelRootDir.'/var/jwt/private.pem',
-                'public_key_path'  => $kernelRootDir.'/var/jwt/public.pem',
-                'pass_phrase'      => 'foobar',
+                'private_key_path'    => $kernelRootDir.'/../var/jwt/private.pem',
+                'public_key_path'     => $kernelRootDir.'/../var/jwt/public.pem',
+                'pass_phrase'         => $configs['passphrase'],
+                'user_identity_field' => $configs['user_identity_field'],
+            ],
+            'gesdinet_jwt_refresh_token' => [
+                'ttl'           => 86400,
+                'user_provider' => $fosUserProviderId,
             ],
         ];
 
         foreach ($configurations as $extension => $config) {
             $container->prependExtensionConfig($extension, $configurations[$extension]);
         }
-
-        $configs = $container->getExtensionConfig($this->getAlias());
-        $config = $this->processConfiguration(new Configuration(), $configs);
     }
 
     /**

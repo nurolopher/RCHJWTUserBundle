@@ -13,7 +13,6 @@ namespace RCH\JWTUserBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
@@ -36,9 +35,7 @@ class GenerateKeysCommand extends ContainerAwareCommand
     {
         $this
           ->setName('rch:jwt:generate-keys')
-          ->setDescription('Generate SSL keys to be consumed by LexikJWTAuthenticationBundle')
-          ->addOption('passphrase', 'pp', InputOption::VALUE_REQUIRED, 'Passphrase used to encrypt/decrypt the generated keys', '')
-          ->addOption('path', null, InputOption::VALUE_REQUIRED, 'The path where in the keys will be generated.');
+          ->setDescription('Generate SSL keys to be consumed by LexikJWTAuthenticationBundle');
     }
 
     /**
@@ -52,15 +49,13 @@ class GenerateKeysCommand extends ContainerAwareCommand
         $this->io->title('RCHJWTUserBundle - Generate SSL Keys');
 
         $rootDir = $this->getContainer()->getParameter('kernel.root_dir');
-        $passphrase = $input->getOption('passphrase');
+        $passphrase = $this->getContainer()->getParameter('rch_jwt_user.passphrase');
 
-        if (!$path = $input->getOption('path')) {
-            $path = $rootDir.'/jwt';
+        $path = $rootDir.'/jwt';
 
-            /* Symfony3 directory structure */
-            if (is_writable($rootDir.'/../var')) {
-                $path = $rootDir.'/../var/jwt';
-            }
+        /* Symfony3 directory structure */
+        if (is_writable($rootDir.'/../var')) {
+            $path = $rootDir.'/../var/jwt';
         }
 
         if (!$fs->exists($path)) {
