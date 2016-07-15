@@ -6,6 +6,8 @@ framework:
     templating:
         engines: ['twig']
     default_locale: en
+    session: ~
+    form: ~
 
 rch_jwt_user:
     user_class: RCH\JWTUserBundle\Entity\User

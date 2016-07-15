@@ -2,8 +2,8 @@
 [![StyleCI](https://styleci.io/repos/49818109/shield)](https://styleci.io/repos/49818109)
 [![Build Status](https://travis-ci.org/chalasr/RCHJWTUserBundle.svg?branch=master)](https://travis-ci.org/chalasr/RCHJWTUserBundle)
 
-RCH/JWTUserBundle
-=================
+RCH/JWTUserBundle (v2.x)
+=======================
 
 Manages users through JSON Web Token in your REST Api.
 
@@ -17,10 +17,11 @@ What's inside
 Requirements
 ------------
 
-- PHP 5.4+
-- Symfony 2.8+
+- PHP 5.5+
+- Symfony 3.0+
 
-__Note__ This branch requires `friendsofsymfony/user-bundle` in versions `~2.0`. For FOSUser `~1.3`, please use the [`1.x` branch](https://github.com/chalasr/RCHJWTUserBundle/tree/1.x) of this bundle.
+__Note__ This branch requires `friendsofsymfony/user-bundle` versions `~2.0`.  
+For using `friendsofsymfony/user-bundle` versions `~1.3` (`>= 1.3, < 2.0`), __please use the [`1.x` branch](https://github.com/chalasr/RCHJWTUserBundle/tree/1.x) of this bundle__.
 
 Installation
 ------------
@@ -218,7 +219,6 @@ Use the token to access secured resources:
 $ curl -H "Authorization: Bearer [token here]" http://localhost:8000
 ```
 
-
 __Note__ The refresh token is provided in the response of a successful login, in the same time as you get the token.
 
 __Note2__ Each time `username` is used in the previous examples, it must be replaced by the `username_parameter` value, set into the secured firewall's mapping.
@@ -229,6 +229,13 @@ Contributing
 ------------
 
 See the contribution guidelines in the [CONTRIBUTING.md](CONTRIBUTING.md) distributed file.
+
+Troubleshooting
+---------------
+
+This bundle includes a set of third party dependencies, _its stability mostly depends on these ones_.
+
+If you are facing problems in its installation/usage, please open an issue on [this repository](https://github.com/chalasr/RCHJWTUserBundle).
 
 License
 -------
