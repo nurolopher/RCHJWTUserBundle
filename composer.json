@@ -12,7 +12,7 @@
         }
     ],
     "require": {
-        "php": "~5.5",
+        "php": ">=5.5",
         "symfony/symfony": "~3.0",
         "friendsofsymfony/user-bundle": "~2.0-dev",
         "fabpot/goutte": "~1.0|~2.0|~3.0",
