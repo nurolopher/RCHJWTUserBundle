@@ -7,6 +7,7 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
+ *
  */
 
 namespace RCH\JWTUserBundle\Services;
@@ -90,6 +91,11 @@ class CredentialFetcher
         }
 
         $config = new Credential($name, $paramConfig);
+
+        if (0 === strpos($this->getRequest()->headers->get('Content-Type'), 'application/json')) {
+            $data = json_decode($this->getRequest()->getContent(), true);
+            $this->getRequest()->request->replace(is_array($data) ? $data : []);
+        }
 
         if (true === $config->required && !($this->getRequest()->request->has($name))) {
             throw new BadRequestUserException(
