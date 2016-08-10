@@ -93,7 +93,7 @@ class CredentialFetcher
 
         if (0 === strpos($this->getRequest()->headers->get('Content-Type'), 'application/json')) {
             $data = json_decode($this->getRequest()->getContent(), true);
-            $this->getRequest()->request->replace(is_array($data) ? $data : array());
+            $this->getRequest()->request->replace(is_array($data) ? $data : []);
         }
 
         if (true === $config->required && !($this->getRequest()->request->has($name))) {
