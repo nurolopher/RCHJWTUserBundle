@@ -92,11 +92,6 @@ class CredentialFetcher
 
         $config = new Credential($name, $paramConfig);
 
-        if (0 === strpos($this->getRequest()->headers->get('Content-Type'), 'application/json')) {
-            $data = json_decode($this->getRequest()->getContent(), true);
-            $this->getRequest()->request->replace(is_array($data) ? $data : []);
-        }
-
         if (true === $config->required && !($this->getRequest()->request->has($name))) {
             throw new BadRequestUserException(
                 $this->formatError($name, false, 'The parameter must be set')
