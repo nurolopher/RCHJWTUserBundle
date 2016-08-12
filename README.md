@@ -188,7 +188,7 @@ security:
 #### 3) Generate RSA keys for signing/verifying JWT tokens
 
 ```bash
-$ php app/console rch:jwt:generate-keys
+$ php bin/console rch:jwt:generate-keys
 ```
 __Note__ This command generates keys using the configured passphrase.
 
