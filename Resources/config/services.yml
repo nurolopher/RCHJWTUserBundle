@@ -14,3 +14,8 @@ services:
         class: RCH\JWTUserBundle\EventListener\ExceptionResponseListener
         tags:
             - { name: kernel.event_listener, event: kernel.exception, method: onKernelResponse }
+
+    rch_jw_user.json_request_transformer:
+        class: RCH\JWTUserBundle\EventListener\JsonRequestTransformerListener
+        tags:
+          - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 100 }

@@ -18,7 +18,8 @@
         "fabpot/goutte": "~1.0|~2.0|~3.0",
         "lexik/jwt-authentication-bundle": "~1.0",
         "gesdinet/jwt-refresh-token-bundle": "~0.1",
-        "doctrine/orm": "^2.5"
+        "doctrine/orm": "^2.5",
+        "qandidate/symfony-json-request-transformer": "^1.2"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^1.11",
