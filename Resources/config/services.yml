@@ -1,9 +1,7 @@
 services:
     rch_jwt_user.credential_fetcher:
         class: RCH\JWTUserBundle\Services\CredentialFetcher
-        arguments:
-            requestStack: "@request_stack"
-            validator: "@validator"
+        arguments: ["@request_stack", "@validator"]
 
     rch_jwt_user.jwt_response_listener:
         class: RCH\JWTUserBundle\EventListener\JwtResponseListener
