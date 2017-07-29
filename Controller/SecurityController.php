@@ -112,11 +112,11 @@ class SecurityController extends Controller
      * Creates a new User.
      *
      * @param array $data
-     * @param bool  $isOAuth
      *
-     * @return UserInterface $user
+     * @param $userManager
+     * @return  $user
      */
-    protected function createUser(array $data, UserProviderInterface $userManager)
+    protected function createUser(array $data, $userManager)
     {
         $userIdentityfield = $this->container->getParameter('rch_jwt_user.user_identity_field');
 

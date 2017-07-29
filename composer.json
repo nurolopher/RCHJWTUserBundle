@@ -29,11 +29,5 @@
         "psr-4": {
             "RCH\\JWTUserBundle\\": ""
          }
-    },
-    "extra": {
-        "branch-alias": {
-            "1.x": "1.x-dev",
-            "dev-master": "2.0.x-dev"
-        }
     }
 }
