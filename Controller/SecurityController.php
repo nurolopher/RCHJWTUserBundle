@@ -11,13 +11,14 @@
 
 namespace RCH\JWTUserBundle\Controller;
 
+use AppBundle\Entity\User;
+use FOS\UserBundle\Doctrine\UserManager;
 use FOS\UserBundle\Model\UserInterface;
 use Gesdinet\JWTRefreshTokenBundle\Entity\RefreshToken;
 use RCH\JWTUserBundle\Exception\InvalidPropertyUserException;
 use RCH\JWTUserBundle\Exception\UserException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Validator\Constraints\Email;
 
 /**
@@ -37,14 +38,17 @@ class SecurityController extends Controller
     public function registerAction()
     {
         $userIdentityField = $this->container->getParameter('rch_jwt_user.user_identity_field');
+        /** @var UserManager $userManager */
         $userManager = $this->container->get('fos_user.user_manager');
-        $userClass = $userManager->getClass();
+        $userClass   = $userManager->getClass();
 
         $rules = [
+            'firstName'        => ['requirements' => '[^/]+'],
+            'lastName'         => ['requirements' => '[^/]+'],
             $userIdentityField => [
                 'requirements' => ['email' == $userIdentityField ? new Email() : '[^/]+'],
             ],
-            'password' => ['requirements' => '[^/]+'],
+            'password'         => ['requirements' => '[^/]+'],
         ];
 
         $params = $this->get('rch_jwt_user.credential_fetcher')
@@ -73,7 +77,7 @@ class SecurityController extends Controller
      */
     public function loginFromOAuthResponseAction()
     {
-        $userManager = $this->container->get('fos_user.user_manager');
+        $userManager       = $this->container->get('fos_user.user_manager');
         $userIdentityField = $this->container->get('rch_jwt_user.user_identity_field');
 
         $data = $this->get('rch_jwt_user.credential_fetcher')
@@ -113,14 +117,18 @@ class SecurityController extends Controller
      *
      * @param array $data
      *
-     * @param $userManager
-     * @return  $user
+     * @param UserManager $userManager
+     *
+     * @return UserInterface $user
      */
-    protected function createUser(array $data, $userManager)
+    protected function createUser(array $data, UserManager $userManager)
     {
         $userIdentityfield = $this->container->getParameter('rch_jwt_user.user_identity_field');
 
-        $user = $userManager->createUser()
+        /** @var User $user */
+        $user = $userManager->createUser();
+        $user->setFirstName($data['firstName'])
+            ->setLastName($data['lastName'])
             ->setUsername($data[$userIdentityfield])
             ->setEmail($data[$userIdentityfield])
             ->setEnabled(true)
@@ -145,7 +153,7 @@ class SecurityController extends Controller
      * Generates a JWT from given User.
      *
      * @param UserInterface $user
-     * @param int           $statusCode
+     * @param int $statusCode
      *
      * @return array Response body containing the User and its tokens
      */
@@ -155,6 +163,8 @@ class SecurityController extends Controller
             'token'         => $this->container->get('lexik_jwt_authentication.jwt_manager')->create($user),
             'refresh_token' => $this->attachRefreshToken($user),
             'user'          => $user->getUsername(),
+            'firstName'     => $user->getFirstName(),
+            'lastName'      => $user->getLastName()
         ];
 
         return new JsonResponse($body, $statusCode);
@@ -170,11 +180,11 @@ class SecurityController extends Controller
     protected function attachRefreshToken(UserInterface $user)
     {
         $refreshTokenManager = $this->container->get('gesdinet.jwtrefreshtoken.refresh_token_manager');
-        $refreshToken = $refreshTokenManager->getLastFromUsername($user->getUsername());
-        $refreshTokenTtl = $this->container->getParameter('gesdinet_jwt_refresh_token.ttl');
+        $refreshToken        = $refreshTokenManager->getLastFromUsername($user->getUsername());
+        $refreshTokenTtl     = $this->container->getParameter('gesdinet_jwt_refresh_token.ttl');
 
         if (!$refreshToken instanceof RefreshToken) {
-            $refreshToken = $refreshTokenManager->create();
+            $refreshToken   = $refreshTokenManager->create();
             $expirationDate = new \DateTime();
             $expirationDate->modify(sprintf('+%s seconds', $refreshTokenTtl));
             $refreshToken->setUsername($user->getUsername());
@@ -188,7 +198,7 @@ class SecurityController extends Controller
     }
 
     /**
-     * @param int    $facebookId          Facebook account id
+     * @param int $facebookId             Facebook account id
      * @param string $facebookAccessToken Facebook access token
      *
      * @return bool Facebook account status
